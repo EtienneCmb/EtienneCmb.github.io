@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Classification &mdash; brainpipe 0.0.25 documentation</title>
+    
+    <link rel="stylesheet" href="_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootstrap-3.3.6/css/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootstrap-3.3.6/css/bootstrap-theme.min.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0.25',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
+    <link rel="top" title="brainpipe 0.0.25 documentation" href="index.html" />
+    <link rel="next" title="Features comming soon" href="soon.html" />
+    <link rel="prev" title="Spectral features" href="spectral.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body role="document">
+
+  <div id="navbar" class="navbar navbar-inverse navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="index.html">
+          brainpipe</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.25</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="preprocessing.html">Pre-processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="spectral.html">Spectral features</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Classification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="soon.html">Features comming soon</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bug.html">Bug</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Classification</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+  <li>
+    <a href="spectral.html" title="Previous Chapter: Spectral features"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Spectral feat...</span>
+    </a>
+  </li>
+  <li>
+    <a href="soon.html" title="Next Chapter: Features comming soon"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Features comm... &raquo;</span>
+    </a>
+  </li>
+              
+            
+            
+            
+            
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="_sources/classification.txt"
+     rel="nofollow">Source</a>
+</div></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+  <div class="section" id="classification">
+<h1>Classification<a class="headerlink" href="#classification" title="Permalink to this headline">¶</a></h1>
+<dl class="docutils">
+<dt>Classify features</dt>
+<dd><ul class="first last simple">
+<li>classify</li>
+<li>defCv</li>
+<li>defClf</li>
+<li>confusion matrix</li>
+<li>time generalization</li>
+</ul>
+</dd>
+</dl>
+<span class="target" id="module-classification"></span><dl class="class">
+<dt id="classification.classify">
+<em class="property">class </em><code class="descclassname">classification.</code><code class="descname">classify</code><span class="sig-paren">(</span><em>y</em>, <em>clf='lda'</em>, <em>cvtype='skfold'</em>, <em>clfArg={}</em>, <em>cvArg={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/classification.html#classify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classification.classify" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define a classification object and apply to classify data.
+This class can be consider as a centralization of scikit-learn
+tools, with a few more options.</p>
+<p>To classify data, two objects are necessary :
+- A classifier object (lda, svm, knn...)
+- A cross-validation object which is used to validate a classification
+performance.
+This two objects can either be defined before the classify object with
+defCv and defClf, or they can be directly defined inside the classify
+class.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>y: array</dt>
+<dd>The vector label</dd>
+</dl>
+</dd>
+<dt>Kwargs:</dt>
+<dd><dl class="first last docutils">
+<dt>clf: int / string / classifier object, optional, [def: 0]</dt>
+<dd>Define a classifier. If clf is an integer or a string, the
+classifier will be defined inside classify. Otherwise, it is
+possible to define a classifier before with defClf and past it in clf.</dd>
+<dt>cvtype: string / cross-validation object, optional, [def: &#8216;skfold&#8217;]</dt>
+<dd>Define a cross-validation. If cvtype is a string, the
+cross-validation will be defined inside classify. Otherwise, it is
+possible to define a cross-validation before with defCv and past it
+in cvtype.</dd>
+<dt>clfArg: dictionnary, optional, [def: {}]</dt>
+<dd>This dictionnary can be used to define supplementar arguments for the
+classifier. See the documentation of defClf.</dd>
+<dt>cvArg: dictionnary, optional, [def: {}]</dt>
+<dd>This dictionnary can be used to define supplementar arguments for the
+cross-validation. See the documentation of defCv.</dd>
+</dl>
+</dd>
+<dt>Example:</dt>
+<dd><p class="first">&gt;&gt; &gt;# 1) Define a classifier and a cross-validation before classify():</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Define a 50 times 5-folds cross-validation :</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cv</span> <span class="o">=</span> <span class="n">defCv</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">cvtype</span><span class="o">=</span><span class="s1">&#39;kfold&#39;</span><span class="p">,</span> <span class="n">rep</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">n_folds</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Define a Random Forest with 200 trees :</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">clf</span> <span class="o">=</span> <span class="n">defClf</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">clf</span><span class="o">=</span><span class="s1">&#39;rf&#39;</span><span class="p">,</span> <span class="n">n_tree</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Past the two objects inside classify :</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">clfObj</span> <span class="o">=</span> <span class="n">classify</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">clf</span><span class="o">=</span><span class="n">clf</span><span class="p">,</span> <span class="n">cvtype</span><span class="o">=</span><span class="n">cv</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># 2) Define a classifier and a cross-validation inside classify():</span>
+<span class="go">    &gt;&gt;&gt; clfObj = classify(y, clf = &#39;rf&#39;, cvtype = &#39;kfold&#39;,</span>
+<span class="go">    ...        clfArg = {&#39;n_tree&#39;:200, &#39;random_state&#39;:100},</span>
+<span class="go">    ...                  cvArg = {&#39;rep&#39;:50, &#39;n_folds&#39;:5})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># 1) and 2) are equivalent. Then use clfObj.fit() to classify data.</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<dl class="method">
+<dt id="classification.classify.confusion_matrix">
+<code class="descname">confusion_matrix</code><span class="sig-paren">(</span><em>x</em>, <em>mf=False</em>, <em>center=False</em>, <em>grp=array([]</em>, <em>dtype=float64)</em>, <em>n_jobs=-1</em>, <em>normalize=True</em>, <em>update=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/classification.html#classify.confusion_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classification.classify.confusion_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get confusion matrix.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>x: array</dt>
+<dd>Data to classify. Consider that x.shape = (N, M), N is the number
+of trials (which should be the length of y). M, the number of
+colums, is a supplementar dimension for classifying data. If M = 1,
+the data is consider as a single feature. If M &gt; 1, use the
+parameter mf to say if x should be consider as a single feature
+(mf=False) or multi-features (mf=True)</dd>
+</dl>
+</dd>
+<dt>Kargs:</dt>
+<dd><dl class="first last docutils">
+<dt>mf: bool, optional, [def: False]</dt>
+<dd>If mf=False, the returned decoding accuracy (da) will have a
+shape of (1, rep) where rep, is the number of repetitions.
+This mean that all the features are used together. If mf=True,
+da.shape = (M, rep), where M is the number of columns of x.</dd>
+<dt>center: optional, bool, [def: False]</dt>
+<dd>Normalize fatures with a zero mean by substracting then dividing
+by the mean. The center parameter should be set to True if the
+classifier is a svm.</dd>
+<dt>grp: array, optional, [def: array()]</dt>
+<dd>If mf=True, the grp parameter allow to define group of features.
+If x.shape = (N, 5) and grp=n.array([0,0,1,2,1]), this mean that
+3 groups of features will be considered : (0,1,2)</dd>
+<dt>n_jobs: integer, optional, [def: -1]</dt>
+<dd>Control the number of jobs to cumpute the decoding accuracy. If
+n_jobs = -1, all the jobs are used.</dd>
+<dt>normalize: bool, optional, [def: True]</dt>
+<dd>Normalize or not the confusion matrix</dd>
+<dt>update: bool, optional, [def: True]</dt>
+<dd>If update is True, the data will be re-classified. But, if update
+is set to False, and if the methods .fit() or .fit_stat() have been
+run before, the data won&#8217;t we re-classified. Instead, the labels
+previously found will be used to get confusion matrix.</dd>
+</dl>
+</dd>
+<dt>Return:</dt>
+<dd>A list of confusion matrix, depending of the size of x.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="classification.classify.fit">
+<code class="descname">fit</code><span class="sig-paren">(</span><em>x</em>, <em>mf=False</em>, <em>center=False</em>, <em>grp=array([]</em>, <em>dtype=float64)</em>, <em>n_jobs=-1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/classification.html#classify.fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classification.classify.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply the classification and cross-validation objects to the array x.
+this method return an array containing the decoding accuracy. The
+dimension of this arry depend of the input x.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>x: array</dt>
+<dd>Data to classify. Consider that x.shape = (N, M), N is the number
+of trials (which should be the length of y). M, the number of
+colums, is a supplementar dimension for classifying data. If M = 1,
+the data is consider as a single feature. If M &gt; 1, use the
+parameter mf to say if x should be consider as a single feature
+(mf=False) or multi-features (mf=True)</dd>
+</dl>
+</dd>
+<dt>Kargs:</dt>
+<dd><dl class="first last docutils">
+<dt>mf: bool, optional, [def: False]</dt>
+<dd>If mf=False, the returned decoding accuracy (da) will have a
+shape of (1, rep) where rep, is the number of repetitions.
+This mean that all the features are used together. If mf=True,
+da.shape = (M, rep), where M is the number of columns of x.</dd>
+<dt>center: optional, bool, [def: False]</dt>
+<dd>Normalize fatures with a zero mean by substracting then dividing
+by the mean. The center parameter should be set to True if the
+classifier is a svm.</dd>
+<dt>grp: array, optional, [def: array()]</dt>
+<dd>If mf=True, the grp parameter allow to define group of features.
+If x.shape = (N, 5) and grp=n.array([0,0,1,2,1]), this mean that
+3 groups of features will be considered : (0,1,2)</dd>
+<dt>n_jobs: integer, optional, [def: -1]</dt>
+<dd>Control the number of jobs to cumpute the decoding accuracy. If
+n_jobs = -1, all the jobs are used.</dd>
+</dl>
+</dd>
+<dt>Return:</dt>
+<dd><dl class="first last docutils">
+<dt>da: array</dt>
+<dd>The decoding accuracy.</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="classification.classify.fit_stat">
+<code class="descname">fit_stat</code><span class="sig-paren">(</span><em>x</em>, <em>mf=False</em>, <em>center=False</em>, <em>grp=array([]</em>, <em>dtype=float64)</em>, <em>method='bino'</em>, <em>n_perm=200</em>, <em>rndstate=0</em>, <em>n_jobs=-1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/classification.html#classify.fit_stat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classification.classify.fit_stat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluate the statistical significiancy of the decoding accuracy.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>x: array</dt>
+<dd>Data to classify. Consider that x.shape = (N, M), N is the number
+of trials (which should be the length of y). M, the number of
+colums, is a supplementar dimension for classifying data. If M = 1,
+the data is consider as a single feature. If M &gt; 1, use the
+parameter mf to say if x should be consider as a single feature
+(mf=False) or multi-features (mf=True)</dd>
+</dl>
+</dd>
+<dt>Kargs:</dt>
+<dd><dl class="first last docutils">
+<dt>mf: bool, optional, [def: False]</dt>
+<dd>If mf=False, the returned decoding accuracy (da) will have a
+shape of (1, rep) where rep, is the number of repetitions.
+This mean that all the features are used together. If mf=True,
+da.shape = (M, rep), where M is the number of columns of x.</dd>
+<dt>center: optional, bool, [def: False]</dt>
+<dd>Normalize fatures with a zero mean by substracting then dividing
+by the mean. The center parameter should be set to True if the
+classifier is a svm.</dd>
+<dt>grp: array, optional, [def: array()]</dt>
+<dd>If mf=True, the grp parameter allow to define group of features.
+If x.shape = (N, 5) and grp=n.array([0,0,1,2,1]), this mean that
+3 groups of features will be considered : (0,1,2)</dd>
+<dt>method: string, optional, [def: &#8216;bino&#8217;]</dt>
+<dd><p class="first">Four methods are implemented to test the statistical significiance
+of the decoding accuracy :</p>
+<blockquote>
+<div><ul class="simple">
+<li>&#8216;bino&#8217;: binomial test</li>
+<li>&#8216;label_rnd&#8217;: randomly shuffle the labels</li>
+<li>&#8216;full_rnd&#8217;: randomly shuffle the whole array x</li>
+<li>&#8216;intra_rnd&#8217;: randomly shuffle x inside each class and each feature</li>
+</ul>
+</div></blockquote>
+<p class="last">Methods 2, 3 and 4 are based on permutations. The method 2 and 3
+should provide similar results. But 4 should be more conservative.</p>
+</dd>
+<dt>n_perm: integer, optional, [def: 200]</dt>
+<dd>Number of permutations for the methods 2, 3 and 4</dd>
+<dt>rndstate: integer, optional, [def: 0]</dt>
+<dd>Fix the random state of the machine. Usefull to reproduce results.</dd>
+<dt>n_jobs: integer, optional, [def: -1]</dt>
+<dd>Control the number of jobs to cumpute the decoding accuracy. If
+n_jobs = -1, all the jobs are used.</dd>
+</dl>
+</dd>
+<dt>Return:</dt>
+<dd><dl class="first last docutils">
+<dt>da: array</dt>
+<dd>The decoding accuracy.</dd>
+<dt>pvalue: array</dt>
+<dd>Array of associated pvalue</dd>
+<dt>daPerm: array</dt>
+<dd>Array of all the decodings obtained for each permutations.</dd>
+<dt>See:</dt>
+<dd><p class="first">[1] Ojala and Garriga. Permutation Tests for Studying Classifier
+Performance.  The Journal of Machine Learning Research (2010)
+vol. 11</p>
+<p class="last">[2] Combrisson, E., &amp; Jerbi, K. (2015). Exceeding chance level by
+chance: The caveat of theoretical chance levels in brain signal
+classification and statistical assessment of decoding accuracy.
+J Neurosci Methods, doi: 10.1016/j.jneurmeth.2015.01.010.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="classification.defClf">
+<em class="property">class </em><code class="descclassname">classification.</code><code class="descname">defClf</code><span class="sig-paren">(</span><em>y</em>, <em>clf='lda'</em>, <em>kern='rbf'</em>, <em>n_knn=10</em>, <em>n_tree=100</em>, <em>priors=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/classification.html#defClf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classification.defClf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Choose a classifier and switch easyly between classifiers
+implemented in scikit-learn.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>y: array</dt>
+<dd>The vector label</dd>
+</dl>
+</dd>
+<dt>clf: int or string, optional, [def: 0]</dt>
+<dd><p class="first">Define a classifier. Use either an integer or a string
+Choose between:</p>
+<blockquote class="last">
+<div><ul class="simple">
+<li>0 / &#8216;lda&#8217;: Linear Discriminant Analysis (LDA)</li>
+<li>1 / &#8216;svm&#8217;: Support Vector Machine (SVM)</li>
+<li>2 / &#8216;linearsvm&#8217; : Linear SVM</li>
+<li>3 / &#8216;nusvm&#8217;: Nu SVM</li>
+<li>4 / &#8216;nb&#8217;: Naive Bayesian</li>
+<li>5 / &#8216;knn&#8217;: k-Nearest Neighbor</li>
+<li>6 / &#8216;rf&#8217;: Random Forest</li>
+<li>7 / &#8216;lr&#8217;: Logistic Regression</li>
+<li>8 / &#8216;qda&#8217;: Quadratic Discriminant Analysis</li>
+</ul>
+</div></blockquote>
+</dd>
+<dt>kern: string, optional, [def: &#8216;rbf&#8217;]</dt>
+<dd>Kernel of the &#8216;svm&#8217; classifier</dd>
+<dt>n_knn: int, optional, [def: 10]</dt>
+<dd>Number of neighbors for the &#8216;knn&#8217; classifier</dd>
+<dt>n_tree: int, optional, [def: 100]</dt>
+<dd>Number of trees for the &#8216;rf&#8217; classifier</dd>
+<dt>Kargs:</dt>
+<dd>optional arguments. To define other parameters, see the description of
+scikit-learn.</dd>
+<dt>Return:</dt>
+<dd><p class="first">A scikit-learn classification objects with two supplementar arguments :</p>
+<blockquote class="last">
+<div><ul class="simple">
+<li>lgStr : long description of the classifier</li>
+<li>shStr : short description of the classifier</li>
+</ul>
+</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="classification.defCv">
+<em class="property">class </em><code class="descclassname">classification.</code><code class="descname">defCv</code><span class="sig-paren">(</span><em>y</em>, <em>cvtype='skfold'</em>, <em>n_folds=10</em>, <em>rndstate=0</em>, <em>rep=10</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/classification.html#defCv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classification.defCv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Choose a cross_validation (CV) and switch easyly between
+CV implemented in scikit-learn.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>y: array</dt>
+<dd>The vector label</dd>
+</dl>
+</dd>
+<dt>kargs:</dt>
+<dd><dl class="first docutils">
+<dt>cvtype: string, optional, [def: skfold]</dt>
+<dd><p class="first">Define a cross_validation. Choose between :</p>
+<blockquote class="last">
+<div><ul class="simple">
+<li>&#8216;skfold&#8217;: Stratified k-Fold</li>
+<li>&#8216;kfold&#8217;: k-fold</li>
+<li>&#8216;sss&#8217;: Stratified Shuffle Split</li>
+<li>&#8216;ss&#8217;: Shuffle Split</li>
+</ul>
+</div></blockquote>
+</dd>
+<dt>n_folds: integer, optional, [def: 10]</dt>
+<dd>Number of folds</dd>
+<dt>rndstate: integer, optional, [def: 0]</dt>
+<dd>Define a random state. Usefull to replicate a result</dd>
+<dt>rep: integer, optional, [def: 10]</dt>
+<dd>Number of repetitions</dd>
+</dl>
+<p class="last">kwargs: optional arguments. To define other parameters,
+see the description of scikit-learn.</p>
+</dd>
+<dt>Return:</dt>
+<dd><p class="first">A list of scikit-learn cross-validation objects with two supplementar
+arguments:</p>
+<blockquote class="last">
+<div><ul class="simple">
+<li>lgStr: long description of the cross_validation</li>
+<li>shStr: short description of the cross_validation</li>
+</ul>
+</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="classification.timegeneralization">
+<em class="property">class </em><code class="descclassname">classification.</code><code class="descname">timegeneralization</code><span class="sig-paren">(</span><em>time</em>, <em>y</em>, <em>x</em>, <em>clf='lda'</em>, <em>cvtype=None</em>, <em>clfArg={}</em>, <em>cvArg={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/classification.html#timegeneralization"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classification.timegeneralization" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generalize accross time the decoding performance of features.
+The time generalization consist of training and testing at diffrents
+moments. The use is to see if a feature is consistent and performant
+in diffrents period of time.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>time: array/list</dt>
+<dd>The time vector of dimension npts</dd>
+<dt>y: array</dt>
+<dd>The vector label of dimension ntrials</dd>
+<dt>x: array</dt>
+<dd>The data to generalize. If x is a 2D array, the dimension of x
+should be (ntrials, npts). If x is 3D array, the third dimension
+is consider as multi-features. This can be usefull to do time
+generalization in multi-features.</dd>
+</dl>
+</dd>
+<dt>Kargs:</dt>
+<dd><dl class="first last docutils">
+<dt>clf: int / string / classifier object, optional, [def: 0]</dt>
+<dd>Define a classifier. If clf is an integer or a string, the
+classifier will be defined inside classify. Otherwise, it is
+possible to define a classifier before with defClf and past it in clf.</dd>
+<dt>cvtype: string / cross-validation object, optional, [def: None]</dt>
+<dd>Define a cross-validation. If cvtype is None, the diagonal of the
+matrix of decoding accuracy will be set at zero. If cvtype is defined,
+a cross-validation will be performed on the diagonal. If cvtype is a
+string, the cross-validation will be defined inside classify.
+Otherwise, it is possible to define a cross-validation before with
+defCv and past it in cvtype.</dd>
+<dt>clfArg: dictionnary, optional, [def: {}]</dt>
+<dd>This dictionnary can be used to define supplementar arguments for the
+classifier. See the documentation of defClf.</dd>
+<dt>cvArg: dictionnary, optional, [def: {}]</dt>
+<dd>This dictionnary can be used to define supplementar arguments for the
+cross-validation. See the documentation of defCv.</dd>
+</dl>
+</dd>
+<dt>Return:</dt>
+<dd>An array of dimension (npts, npts) containing the decoding accuracy. The y
+axis is the training time and the x axis is the testing time (also known
+as &#8220;generalization time&#8221;)</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2016, Etienne Combrisson.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

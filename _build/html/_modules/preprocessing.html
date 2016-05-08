@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>preprocessing &mdash; brainpipe 0.0.25 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootstrap-3.3.6/css/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootstrap-3.3.6/css/bootstrap-theme.min.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.25',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <link rel="top" title="brainpipe 0.0.25 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body role="document">
+
+  <div id="navbar" class="navbar navbar-inverse navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          brainpipe</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.25</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../preprocessing.html">Pre-processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../spectral.html">Spectral features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../classification.html">Classification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../soon.html">Features comming soon</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bug.html">Bug</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"></ul>
+</li>
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+  <h1>Source code for preprocessing</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">re</span> <span class="kn">import</span> <span class="n">findall</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;bipolarization&#39;</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">_chaninspect</span><span class="p">(</span><span class="n">strlst</span><span class="p">,</span> <span class="n">tofind</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;In a list, find &quot;tofind&quot; which can be a srting or integer</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Check tofind parameter :</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tofind</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tofind</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">)):</span>
+            <span class="n">tofind</span> <span class="o">=</span> <span class="p">[</span><span class="n">tofind</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">tofind</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">tofind</span><span class="p">)</span>
+    <span class="c1"># Find channels :</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">tofind</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">idx</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">strlst</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">idx</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">idx</span>
+
+
+<div class="viewcode-block" id="bipolarization"><a class="viewcode-back" href="../preprocessing.html#preprocessing.bipolarization">[docs]</a><span class="k">def</span> <span class="nf">bipolarization</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">xyz</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">unbip</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                   <span class="n">rmchan</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">keepchan</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">rmspace</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">rmalone</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Bipolarize data</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        data: array</span>
+<span class="sd">            Data to bipolarize</span>
+
+<span class="sd">        channel: list</span>
+<span class="sd">            List of channels name</span>
+
+<span class="sd">    Kwargs:</span>
+<span class="sd">        dim: integer, optional, [def: 0]</span>
+<span class="sd">            Specify where is the channel dimension of data</span>
+
+<span class="sd">        xyz: array, optional, [def: None]</span>
+<span class="sd">            Electrode coordinates. Must be a n_channel x 3</span>
+
+<span class="sd">        sep: string, optional, [def: &#39;.&#39;]</span>
+<span class="sd">            Separator to simplify electrode names by removing undesired name</span>
+<span class="sd">            after the sep. For example, if channel = [&#39;h1.025&#39;, &#39;h2.578&#39;]</span>
+<span class="sd">            and sep=&#39;.&#39;, the final name will be &#39;h2-h1&#39;.</span>
+
+<span class="sd">        unbip: list, optional, [def: None]</span>
+<span class="sd">            Channel that don&#39;t need a bipolarization but to keep.</span>
+<span class="sd">            This list can either be the index or the name of the channel.</span>
+
+<span class="sd">        rmchan: list, optional, [def: None]</span>
+<span class="sd">            Channel to remove. This list can either be the index or the</span>
+<span class="sd">            name of the channel.</span>
+
+<span class="sd">        keepchan: list, optional, [def: &#39;all&#39;]</span>
+<span class="sd">            Channel to keep. This list can either be the index or the</span>
+<span class="sd">            name of the channel.</span>
+
+<span class="sd">        rmspace: bool, optional, [def: True]</span>
+<span class="sd">            Remove undesired space in channel names.</span>
+
+<span class="sd">        rmalone: bool, optional, [def: True]</span>
+<span class="sd">            Remove electrodes that cannot be bipolarized.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        data_b: array</span>
+<span class="sd">            Bipolarized data.</span>
+
+<span class="sd">        channel_b: list</span>
+<span class="sd">            List of the bipolrized channels name.</span>
+
+<span class="sd">        xyz_b: array</span>
+<span class="sd">            Array of the new xyz coordinates.</span>
+
+<span class="sd">    Example :</span>
+<span class="sd">        &gt;&gt;&gt; x = 47</span>
+<span class="sd">        &gt;&gt;&gt; f = np.array(47, 54, 85)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Check data size :</span>
+    <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">dim</span><span class="p">]</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">channel</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Dimension {dim} of data must be &quot;</span>
+                         <span class="s2">&quot;{val}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="n">dim</span><span class="p">,</span> <span class="n">val</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">channel</span><span class="p">)))</span>
+    <span class="k">if</span> <span class="n">dim</span> <span class="ow">is</span> <span class="ow">not</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">dim</span><span class="p">)</span>
+
+    <span class="c1"># Check if the user is not trying to keep and remove the same elec :</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">rmchan</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">keepchan</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">):</span>
+        <span class="c1"># Check if there is no intersection :</span>
+        <span class="n">inter</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">rmchan</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">keepchan</span><span class="p">)))</span>
+        <span class="k">if</span> <span class="n">inter</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;You are trying to keep and to remove the &quot;</span>
+                             <span class="s2">&quot;same channel {inter}. You have to &quot;</span>
+                             <span class="s2">&quot;choose !&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">inter</span><span class="o">=</span><span class="n">inter</span><span class="p">))</span>
+
+    <span class="c1"># Remove channels :</span>
+    <span class="k">if</span> <span class="n">rmchan</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="c1"># Find channels :</span>
+        <span class="n">chan2rm</span> <span class="o">=</span> <span class="n">_chaninspect</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">rmchan</span><span class="p">)</span>
+        <span class="c1"># Remove in data :</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">chan2rm</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="c1"># Update chhanel names :</span>
+        <span class="n">channel</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">num</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span> <span class="k">if</span> <span class="n">num</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">chan2rm</span><span class="p">]</span>
+
+    <span class="c1"># Channels to keep :</span>
+    <span class="k">if</span> <span class="n">keepchan</span> <span class="ow">is</span> <span class="s1">&#39;all&#39;</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Find channels :</span>
+        <span class="n">chan2keep</span> <span class="o">=</span> <span class="n">_chaninspect</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">keepchan</span><span class="p">)</span>
+        <span class="c1"># Keep data and channel :</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">chan2keep</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+        <span class="n">channel</span> <span class="o">=</span> <span class="p">[</span><span class="n">channel</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">chan2keep</span><span class="p">]</span>
+
+    <span class="c1"># Get list of channel that don&#39;t need bipolarization :</span>
+    <span class="k">if</span> <span class="n">unbip</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">unbipidx</span> <span class="o">=</span> <span class="n">_chaninspect</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">unbip</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">unbipidx</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># Use a separator for the channel name :</span>
+    <span class="n">chanShort</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">sep</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">channel</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">sep</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">channel</span> <span class="o">=</span> <span class="n">chanShort</span>
+
+    <span class="c1"># Get num list :</span>
+    <span class="n">numlst</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">if</span> <span class="n">findall</span><span class="p">(</span>
+        <span class="s1">r&#39;\d+&#39;</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="o">==</span> <span class="p">[]</span> <span class="k">else</span> <span class="nb">int</span><span class="p">(</span><span class="n">findall</span><span class="p">(</span><span class="s1">r&#39;\d+&#39;</span><span class="p">,</span> <span class="n">i</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">chanShort</span><span class="p">]</span>
+
+    <span class="c1"># Find channel association :</span>
+    <span class="n">channel_b</span><span class="p">,</span> <span class="n">idx_b</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">num</span><span class="p">,</span> <span class="n">chan</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">chanShort</span><span class="p">):</span>
+        <span class="c1"># Get current letter and num :</span>
+        <span class="n">cletter</span> <span class="o">=</span> <span class="n">chan</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">cnum</span> <span class="o">=</span> <span class="n">numlst</span><span class="p">[</span><span class="n">num</span><span class="p">]</span>
+        <span class="c1"># If chan is consider and there is a number in the elec name :</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">num</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">unbipidx</span><span class="p">)</span> <span class="ow">and</span> <span class="n">cnum</span><span class="p">:</span>
+            <span class="c1"># Try to find elec-1 :</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># Search if num-1 exist :</span>
+                <span class="n">id_1</span> <span class="o">=</span> <span class="n">chanShort</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">cletter</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">cnum</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+                <span class="c1"># Append new name :</span>
+                <span class="n">channel_b</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">channel</span><span class="p">[</span><span class="n">num</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;-&#39;</span><span class="o">+</span><span class="n">channel</span><span class="p">[</span><span class="n">id_1</span><span class="p">])</span>
+                <span class="c1"># Append idx to substract :</span>
+                <span class="n">idx_b</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">num</span><span class="p">,</span> <span class="n">id_1</span><span class="p">])</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">cnum</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">rmalone</span><span class="p">:</span>
+                    <span class="n">channel_b</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">chan</span><span class="p">)</span>
+                    <span class="n">idx_b</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">num</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">rmalone</span><span class="p">:</span>
+                <span class="n">channel_b</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">chan</span><span class="p">)</span>
+                <span class="n">idx_b</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">num</span><span class="p">)</span>
+
+    <span class="c1"># Bipolarized data and mean of xyz :</span>
+    <span class="n">data_b</span><span class="p">,</span> <span class="n">xyz_b</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">idx_b</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">idx_b</span><span class="p">:</span>
+            <span class="c1"># ::::::::::::::: DATA ::::::::::::::::</span>
+            <span class="c1"># Bipolarized :</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="n">data_b</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">...</span><span class="p">]</span> <span class="o">-</span> <span class="n">data</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="o">...</span><span class="p">])</span>
+            <span class="c1"># Keep intact :</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+                <span class="n">data_b</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span>
+
+            <span class="c1"># ::::::::::::::: XYZ ::::::::::::::::</span>
+            <span class="k">if</span> <span class="n">xyz</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="c1"># Bipolarized :</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                    <span class="n">xyz_b</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">xyz</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">:]</span><span class="o">+</span><span class="n">xyz</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">:])</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+                <span class="c1"># Keep intact :</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+                    <span class="n">xyz_b</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">xyz</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="p">:])</span>
+
+    <span class="c1"># Remove undesired space :</span>
+    <span class="k">if</span> <span class="n">rmspace</span><span class="p">:</span>
+        <span class="n">channel_b</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">channel_b</span><span class="p">]</span>
+
+    <span class="c1"># Finally swapaxis if not 0 :</span>
+    <span class="k">if</span> <span class="n">dim</span> <span class="ow">is</span> <span class="ow">not</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">data_b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data_b</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">dim</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">data_b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data_b</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">data_b</span><span class="p">,</span> <span class="n">channel_b</span><span class="p">,</span> <span class="n">xyz_b</span></div>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2016, Etienne Combrisson.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>
