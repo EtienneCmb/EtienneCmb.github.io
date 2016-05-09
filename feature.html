@@ -94,6 +94,14 @@
 </ul>
 </li>
 </ul>
+<p class="caption"><span class="caption-text">VISUALIZATION</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="visualization.html">Visualization</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="visualization.html#border-plot">Border plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visualization.html#add-lines">Add lines</a></li>
+</ul>
+</li>
+</ul>
 <p class="caption"><span class="caption-text">OTHERS</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="tools.html">Tools</a><ul>
@@ -142,7 +150,7 @@
 <h1>Neuronal Features<a class="headerlink" href="#neuronal-features" title="Permalink to this headline">¶</a></h1>
 <div class="admonition-todo admonition" id="index-0">
 <p class="first admonition-title">Todo</p>
-<p class="last">Missing methods in pac // PLV // Entropy</p>
+<p class="last">Missing methods in PAC // PLV // Entropy</p>
 </div>
 <p>Here&#8217;s the list of implemented features:</p>
 <ul class="simple">
@@ -176,8 +184,18 @@
 <dt>npts: int</dt>
 <dd>Number of points of the time serie</dd>
 <dt>f: tuple/list</dt>
-<dd>List containing the couple of frequency bands to extract spectral
-informations. Example : f=[ [2,4], [5,7], [60,250] ]</dd>
+<dd><p class="first">List containing the couple of frequency bands to extract spectral
+informations. Alternatively, f can be define with the form
+f=(fstart, fend, fwidth, fstep) where fstart and fend are the
+starting and endind frequencies, fwidth and fstep are the width
+and step of each band.</p>
+<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Specify each band:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="p">[</span> <span class="p">[</span><span class="mi">15</span><span class="p">,</span> <span class="mi">35</span><span class="p">],</span> <span class="p">[</span><span class="mi">25</span><span class="p">,</span> <span class="mi">45</span><span class="p">],</span> <span class="p">[</span><span class="mi">35</span><span class="p">,</span> <span class="mi">55</span><span class="p">],</span> <span class="p">[</span><span class="mi">45</span><span class="p">,</span> <span class="mi">60</span><span class="p">],</span> <span class="p">[</span><span class="mi">55</span><span class="p">,</span> <span class="mi">75</span><span class="p">]</span> <span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Second option:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">75</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
 <dt>window: tuple/list/None, optional [def: None]</dt>
 <dd>List/tuple: [100,1500]
 List of list/tuple: [(100,500),(200,4000)]
@@ -305,8 +323,18 @@ specific dimension. If maxstat is -2, not correction is applied.</dd>
 <dt>npts: int</dt>
 <dd>Number of points of the time serie</dd>
 <dt>f: tuple/list</dt>
-<dd>List containing the couple of frequency bands to extract spectral
-informations. Example : f=[ [2,4], [5,7], [60,250] ]</dd>
+<dd><p class="first">List containing the couple of frequency bands to extract spectral
+informations. Alternatively, f can be define with the form
+f=(fstart, fend, fwidth, fstep) where fstart and fend are the
+starting and endind frequencies, fwidth and fstep are the width
+and step of each band.</p>
+<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Specify each band:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="p">[</span> <span class="p">[</span><span class="mi">15</span><span class="p">,</span> <span class="mi">35</span><span class="p">],</span> <span class="p">[</span><span class="mi">25</span><span class="p">,</span> <span class="mi">45</span><span class="p">],</span> <span class="p">[</span><span class="mi">35</span><span class="p">,</span> <span class="mi">55</span><span class="p">],</span> <span class="p">[</span><span class="mi">45</span><span class="p">,</span> <span class="mi">60</span><span class="p">],</span> <span class="p">[</span><span class="mi">55</span><span class="p">,</span> <span class="mi">75</span><span class="p">]</span> <span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Second option:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">75</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
 <dt>window: tuple/list/None, optional [def: None]</dt>
 <dd>List/tuple: [100,1500]
 List of list/tuple: [(100,500),(200,4000)]
@@ -446,8 +474,18 @@ specific dimension. If maxstat is -2, not correction is applied.</dd>
 <dt>npts: int</dt>
 <dd>Number of points of the time serie</dd>
 <dt>f: tuple/list</dt>
-<dd>List containing the couple of frequency bands to extract spectral
-informations. Example : f=[ [2,4], [5,7], [60,250] ]</dd>
+<dd><p class="first">List containing the couple of frequency bands to extract spectral
+informations. Alternatively, f can be define with the form
+f=(fstart, fend, fwidth, fstep) where fstart and fend are the
+starting and endind frequencies, fwidth and fstep are the width
+and step of each band.</p>
+<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Specify each band:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="p">[</span> <span class="p">[</span><span class="mi">15</span><span class="p">,</span> <span class="mi">35</span><span class="p">],</span> <span class="p">[</span><span class="mi">25</span><span class="p">,</span> <span class="mi">45</span><span class="p">],</span> <span class="p">[</span><span class="mi">35</span><span class="p">,</span> <span class="mi">55</span><span class="p">],</span> <span class="p">[</span><span class="mi">45</span><span class="p">,</span> <span class="mi">60</span><span class="p">],</span> <span class="p">[</span><span class="mi">55</span><span class="p">,</span> <span class="mi">75</span><span class="p">]</span> <span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Second option:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">75</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
 <dt>window: tuple/list/None, optional [def: None]</dt>
 <dd>List/tuple: [100,1500]
 List of list/tuple: [(100,500),(200,4000)]
@@ -574,6 +612,154 @@ specific dimension. If maxstat is -2, not correction is applied.</dd>
 </div>
 <div class="section" id="time-frequency">
 <span id="tf"></span><h3>Time-Frequency<a class="headerlink" href="#time-frequency" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">feature.</code><code class="descname">TF</code><span class="sig-paren">(</span><em>sf</em>, <em>npts</em>, <em>f=(2</em>, <em>200</em>, <em>10</em>, <em>5)</em>, <em>baseline=(1</em>, <em>2)</em>, <em>norm=0</em>, <em>method='hilbert1'</em>, <em>window=None</em>, <em>width=None</em>, <em>step=None</em>, <em>split=None</em>, <em>time=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brainpipe/feat/basics.html#TF"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Extract the time-frequency map of the signal. This class is optimized for 3D arrays.</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>sf: int</dt>
+<dd>Sampling frequency</dd>
+<dt>npts: int</dt>
+<dd>Number of points of the time serie</dd>
+<dt>f: tuple/list</dt>
+<dd><p class="first">List containing the couple of frequency bands to extract spectral
+informations. Alternatively, f can be define with the form
+f=(fstart, fend, fwidth, fstep) where fstart and fend are the
+starting and endind frequencies, fwidth and fstep are the width
+and step of each band.</p>
+<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Specify each band:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="p">[</span> <span class="p">[</span><span class="mi">15</span><span class="p">,</span> <span class="mi">35</span><span class="p">],</span> <span class="p">[</span><span class="mi">25</span><span class="p">,</span> <span class="mi">45</span><span class="p">],</span> <span class="p">[</span><span class="mi">35</span><span class="p">,</span> <span class="mi">55</span><span class="p">],</span> <span class="p">[</span><span class="mi">45</span><span class="p">,</span> <span class="mi">60</span><span class="p">],</span> <span class="p">[</span><span class="mi">55</span><span class="p">,</span> <span class="mi">75</span><span class="p">]</span> <span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Second option:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">75</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+<dt>window: tuple/list/None, optional [def: None]</dt>
+<dd>List/tuple: [100,1500]
+List of list/tuple: [(100,500),(200,4000)]
+None and the width and step parameters will be considered</dd>
+<dt>width: int, optional [def: None]</dt>
+<dd>width of a single window.</dd>
+<dt>step: int, optional [def: None]</dt>
+<dd>Each window will be spaced by the &#8220;step&#8221; value.</dd>
+<dt>time: list/array, optional [def: None]</dt>
+<dd>Define a specific time vector</dd>
+</dl>
+</dd>
+<dt>norm: int, optional [def: 0]</dt>
+<dd><blockquote class="first">
+<div><dl class="docutils">
+<dt>Number to choose the normalization method</dt>
+<dd><ul class="first last simple">
+<li>0: No normalisation</li>
+<li>1: Substraction</li>
+<li>2: Division</li>
+<li>3: Substract then divide</li>
+<li>4: Z-score</li>
+</ul>
+</dd>
+</dl>
+</div></blockquote>
+<dl class="last docutils">
+<dt>baseline: tuple/list of int [def: (1,1)]</dt>
+<dd>Define a window to normalize the power</dd>
+<dt>split: int or list of int, optional [def: None]</dt>
+<dd>Split the frequency band f in &#8220;split&#8221; band width.
+If f is a list which contain couple of frequencies,
+split is a list too.</dd>
+</dl>
+</dd>
+<dt>method: string</dt>
+<dd><dl class="first docutils">
+<dt>Method to transform the signal. Possible values are:</dt>
+<dd><ul class="first last simple">
+<li>&#8216;hilbert&#8217;: apply a hilbert transform to each column</li>
+<li>&#8216;hilbert1&#8217;: hilbert transform to a whole matrix</li>
+<li>&#8216;hilbert2&#8217;: 2D hilbert transform</li>
+<li>&#8216;wavelet&#8217;: wavelet transform</li>
+</ul>
+</dd>
+</dl>
+<p>kwargs: supplementar arguments for filtering</p>
+<dl class="last docutils">
+<dt>filtname: string, optional [def: &#8216;fir1&#8217;]</dt>
+<dd><dl class="first last docutils">
+<dt>Name of the filter. Possible values are:</dt>
+<dd><ul class="first last simple">
+<li>&#8216;fir1&#8217;: Window-based FIR filter design</li>
+<li>&#8216;butter&#8217;: butterworth filter</li>
+<li>&#8216;bessel&#8217;: bessel filter</li>
+</ul>
+</dd>
+</dl>
+</dd>
+<dt>cycle: int, optional [def: 3]</dt>
+<dd>Number of cycle to use for the filter. This parameter
+is only avaible for the &#8216;fir1&#8217; method</dd>
+<dt>order: int, optional [def: 3]</dt>
+<dd>Order of the &#8216;butter&#8217; or &#8216;bessel&#8217; filter</dd>
+<dt>axis: int, optional [def: 0]</dt>
+<dd>Filter accross the dimension &#8216;axis&#8217;</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+<dl class="method">
+<dt id="feature.TF.get">
+<code class="descname">get</code><span class="sig-paren">(</span><em>x</em>, <em>statmeth='permutation'</em>, <em>twotails=False</em>, <em>maxstat=-2</em>, <em>n_perm=200</em>, <em>n_jobs=-1</em><span class="sig-paren">)</span><a class="headerlink" href="#feature.TF.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the spectral informations of the signal x.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>x: array</dt>
+<dd>Data. x should have a shape of
+(n_electrodes x n_pts x n_trials)</dd>
+</dl>
+</dd>
+<dt>Kargs:</dt>
+<dd><dl class="first last docutils">
+<dt>n_perm: integer, optional, [def: 200]</dt>
+<dd>Number of permutations for assessing statistical significiancy.</dd>
+</dl>
+</dd>
+<dt>statmeth: string, optional, [def: &#8216;none&#8217;]</dt>
+<dd><p class="first">Method to evaluate the statistical significiancy. To get p-values,
+the program will compare real values with a defined baseline. As a
+consequence, the &#8216;norm&#8217; parameter should not be equal to zero.</p>
+<blockquote class="last">
+<div><ul class="simple">
+<li>&#8216;none&#8217;: no statistical evaluation</li>
+<li>&#8216;permutation&#8217;: randomly shuffle real data with baseline.Control the number of permutations with the n_perm parameter. For example, if n_perm = 1000, this mean that minimum p-valueswill be 0.001.</li>
+<li>&#8216;wilcoxon&#8217;: Wilcoxon signed-rank test</li>
+<li>&#8216;kruskal&#8217;: Kruskal-Wallis H-test</li>
+</ul>
+</div></blockquote>
+</dd>
+<dt>twotails: bool, optional, [def: False]</dt>
+<dd>For the permutation method, get p-values from the two tails of the
+distribution.</dd>
+<dt>maxtstat: integer, optional, [def -2]</dt>
+<dd>Correct p-values with maximum statistique. maxstat correspond to
+the dimension of perm for correction. Use -1 to correct through all
+dimensions. Otherwise, use d1, d2, ... or dn to correct through a
+specific dimension. If maxstat is -2, not correction is applied.</dd>
+<dt>n_perm: integer, optional, [def: 200]</dt>
+<dd>Number of permutations for assessing statistical significiancy.</dd>
+<dt>Return:</dt>
+<dd><dl class="first last docutils">
+<dt>xF: array</dt>
+<dd>The un/normalized feature of x, with a shape of
+(n_frequency x n_electrodes x n_window x n_trials)</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="phase">
 <span id="id3"></span><h3>Phase<a class="headerlink" href="#phase" title="Permalink to this headline">¶</a></h3>
@@ -590,8 +776,18 @@ specific dimension. If maxstat is -2, not correction is applied.</dd>
 <dt>npts: int</dt>
 <dd>Number of points of the time serie</dd>
 <dt>f: tuple/list</dt>
-<dd>List containing the couple of frequency bands to extract spectral
-informations. Example : f=[ [2,4], [5,7], [60,250] ]</dd>
+<dd><p class="first">List containing the couple of frequency bands to extract spectral
+informations. Alternatively, f can be define with the form
+f=(fstart, fend, fwidth, fstep) where fstart and fend are the
+starting and endind frequencies, fwidth and fstep are the width
+and step of each band.</p>
+<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Specify each band:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="p">[</span> <span class="p">[</span><span class="mi">15</span><span class="p">,</span> <span class="mi">35</span><span class="p">],</span> <span class="p">[</span><span class="mi">25</span><span class="p">,</span> <span class="mi">45</span><span class="p">],</span> <span class="p">[</span><span class="mi">35</span><span class="p">,</span> <span class="mi">55</span><span class="p">],</span> <span class="p">[</span><span class="mi">45</span><span class="p">,</span> <span class="mi">60</span><span class="p">],</span> <span class="p">[</span><span class="mi">55</span><span class="p">,</span> <span class="mi">75</span><span class="p">]</span> <span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Second option:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">75</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
 <dt>window: tuple/list/None, optional [def: None]</dt>
 <dd>List/tuple: [100,1500]
 List of list/tuple: [(100,500),(200,4000)]
