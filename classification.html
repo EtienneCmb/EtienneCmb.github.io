@@ -1,163 +1,259 @@
+
+
 <!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Classification &mdash; brainpipe 0.0.25 documentation</title>
+  
 
+  
+  
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+
+  
+  
     
-    <title>Classification &mdash; brainpipe 0.0.25 documentation</title>
-    
-    <link rel="stylesheet" href="_static/basic.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/bootstrap-3.3.6/css/bootstrap.min.css" type="text/css" />
-    <link rel="stylesheet" href="_static/bootstrap-3.3.6/css/bootstrap-theme.min.css" type="text/css" />
-    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '0.0.25',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/js/jquery-1.11.0.min.js"></script>
-    <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
-    <script type="text/javascript" src="_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
-    <link rel="top" title="brainpipe 0.0.25 documentation" href="index.html" />
-    <link rel="next" title="Features comming soon" href="soon.html" />
-    <link rel="prev" title="Spectral features" href="spectral.html" />
-<meta charset='utf-8'>
-<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
-<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
-<meta name="apple-mobile-web-app-capable" content="yes">
 
-  </head>
-  <body role="document">
+  
 
-  <div id="navbar" class="navbar navbar-inverse navbar-default navbar-fixed-top">
-    <div class="container">
-      <div class="navbar-header">
-        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
-        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand" href="index.html">
-          brainpipe</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.0.25</b></span>
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="brainpipe 0.0.25 documentation" href="index.html"/>
+        <link rel="next" title="Statistics" href="stat.html"/>
+        <link rel="prev" title="Neuronal Features" href="feature.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+          <a href="index.html" class="fa fa-home"> brainpipe</a>
+        
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
       </div>
 
-        <div class="collapse navbar-collapse nav-collapse">
-          <ul class="nav navbar-nav">
-            
-            
-              <li class="dropdown globaltoc-container">
-  <a role="button"
-     id="dLabelGlobalToc"
-     data-toggle="dropdown"
-     data-target="#"
-     href="index.html">Site <b class="caret"></b></a>
-  <ul class="dropdown-menu globaltoc"
-      role="menu"
-      aria-labelledby="dLabelGlobalToc"><ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="preprocessing.html">Pre-processing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="spectral.html">Spectral features</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Classification</a></li>
-<li class="toctree-l1"><a class="reference internal" href="soon.html">Features comming soon</a></li>
-<li class="toctree-l1"><a class="reference internal" href="bug.html">Bug</a></li>
-</ul>
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <p class="caption"><span class="caption-text">PROCESSING</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="preprocessing.html">Pre-processing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="preprocessing.html#bipolarization">Bipolarization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="preprocessing.html#physiology">Physiology</a></li>
 </ul>
 </li>
-              
-                <li class="dropdown">
-  <a role="button"
-     id="dLabelLocalToc"
-     data-toggle="dropdown"
-     data-target="#"
-     href="#">Page <b class="caret"></b></a>
-  <ul class="dropdown-menu localtoc"
-      role="menu"
-      aria-labelledby="dLabelLocalToc"><ul>
-<li><a class="reference internal" href="#">Classification</a><ul>
-<li><a class="reference internal" href="#note">Note</a></li>
+<li class="toctree-l1"><a class="reference internal" href="feature.html">Neuronal Features</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="feature.html#basics">Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="feature.html#coupling-features">Coupling features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="feature.html#tools">Tools</a></li>
 </ul>
 </li>
 </ul>
+<p class="caption"><span class="caption-text">CLASSIFICATION</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Classification</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#basic">Basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#multi-features">Multi-features</a></li>
 </ul>
 </li>
-              
-            
-            
-              
-                
-  <li>
-    <a href="spectral.html" title="Previous Chapter: Spectral features"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Spectral feat...</span>
-    </a>
-  </li>
-  <li>
-    <a href="soon.html" title="Next Chapter: Features comming soon"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Features comm... &raquo;</span>
-    </a>
-  </li>
-              
-            
-            
-            
-            
-              <li class="hidden-sm">
-<div id="sourcelink">
-  <a href="_sources/classification.txt"
-     rel="nofollow">Source</a>
-</div></li>
-            
-          </ul>
+</ul>
+<p class="caption"><span class="caption-text">STATISTIQUES</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="stat.html">Statistics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="stat.html#binomial">Binomial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="stat.html#permutations">Permutations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="stat.html#multiple-comparisons">Multiple-comparisons</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">OTHERS</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tools.html">Tools</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tools.html#bpstudy">Bpstudy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.html#pandas-complements">Pandas complements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.html#file-management">File management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.html#others">Others</a></li>
+</ul>
+</li>
+</ul>
 
           
-            
-<form class="navbar-form navbar-right" action="search.html" method="get">
- <div class="form-group">
-  <input type="text" name="q" class="form-control" placeholder="Search" />
- </div>
-  <input type="hidden" name="check_keywords" value="yes" />
-  <input type="hidden" name="area" value="default" />
-</form>
-          
-        </div>
-    </div>
-  </div>
+        
+      </div>
+      &nbsp;
+    </nav>
 
-<div class="container">
-  <div class="row">
-    <div class="col-md-12 content">
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
       
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">brainpipe</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Classification</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="_sources/classification.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
   <div class="section" id="classification">
 <h1>Classification<a class="headerlink" href="#classification" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="note">
-<h2>Note<a class="headerlink" href="#note" title="Permalink to this headline">¶</a></h2>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">This is a <strong>note</strong>.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">brainpipe.classification</span> <span class="kn">import</span> <span class="o">*</span>
+</pre></div>
 </div>
+<div class="section" id="basic">
+<h2>Basic<a class="headerlink" href="#basic" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="define-a-classifier">
+<h3>Define a classifier<a class="headerlink" href="#define-a-classifier" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">classification.</code><code class="descname">defClf</code><span class="sig-paren">(</span><em>y</em>, <em>clf='lda'</em>, <em>kern='rbf'</em>, <em>n_knn=10</em>, <em>n_tree=100</em>, <em>priors=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brainpipe/clf/_classification.html#defClf"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Choose a classifier and switch easyly between classifiers
+implemented in scikit-learn.</p>
 <dl class="docutils">
-<dt>Classify features</dt>
-<dd><ul class="first last simple">
-<li>classify</li>
-<li>defCv</li>
-<li>defClf</li>
-<li>confusion matrix</li>
-<li>time generalization</li>
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>y: array</dt>
+<dd>The vector label</dd>
+</dl>
+</dd>
+<dt>clf: int or string, optional, [def: 0]</dt>
+<dd><p class="first">Define a classifier. Use either an integer or a string
+Choose between:</p>
+<blockquote class="last">
+<div><ul class="simple">
+<li>0 / &#8216;lda&#8217;: Linear Discriminant Analysis (LDA)</li>
+<li>1 / &#8216;svm&#8217;: Support Vector Machine (SVM)</li>
+<li>2 / &#8216;linearsvm&#8217; : Linear SVM</li>
+<li>3 / &#8216;nusvm&#8217;: Nu SVM</li>
+<li>4 / &#8216;nb&#8217;: Naive Bayesian</li>
+<li>5 / &#8216;knn&#8217;: k-Nearest Neighbor</li>
+<li>6 / &#8216;rf&#8217;: Random Forest</li>
+<li>7 / &#8216;lr&#8217;: Logistic Regression</li>
+<li>8 / &#8216;qda&#8217;: Quadratic Discriminant Analysis</li>
 </ul>
+</div></blockquote>
+</dd>
+<dt>kern: string, optional, [def: &#8216;rbf&#8217;]</dt>
+<dd>Kernel of the &#8216;svm&#8217; classifier</dd>
+<dt>n_knn: int, optional, [def: 10]</dt>
+<dd>Number of neighbors for the &#8216;knn&#8217; classifier</dd>
+<dt>n_tree: int, optional, [def: 100]</dt>
+<dd>Number of trees for the &#8216;rf&#8217; classifier</dd>
+<dt>Kargs:</dt>
+<dd>optional arguments. To define other parameters, see the description of
+scikit-learn.</dd>
+<dt>Return:</dt>
+<dd><p class="first">A scikit-learn classification objects with two supplementar arguments :</p>
+<blockquote class="last">
+<div><ul class="simple">
+<li>lgStr : long description of the classifier</li>
+<li>shStr : short description of the classifier</li>
+</ul>
+</div></blockquote>
 </dd>
 </dl>
-<span class="target" id="module-classification"></span><dl class="class">
-<dt id="classification.classify">
-<em class="property">class </em><code class="descclassname">classification.</code><code class="descname">classify</code><span class="sig-paren">(</span><em>y</em>, <em>clf='lda'</em>, <em>cvtype='skfold'</em>, <em>clfArg={}</em>, <em>cvArg={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/classification.html#classify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classification.classify" title="Permalink to this definition">¶</a></dt>
+</dd></dl>
+
+</div>
+<div class="section" id="define-a-cross-validation">
+<h3>Define a cross-validation<a class="headerlink" href="#define-a-cross-validation" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">classification.</code><code class="descname">defCv</code><span class="sig-paren">(</span><em>y</em>, <em>cvtype='skfold'</em>, <em>n_folds=10</em>, <em>rndstate=0</em>, <em>rep=10</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brainpipe/clf/_classification.html#defCv"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Choose a cross_validation (CV) and switch easyly between
+CV implemented in scikit-learn.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>y: array</dt>
+<dd>The vector label</dd>
+</dl>
+</dd>
+<dt>kargs:</dt>
+<dd><dl class="first docutils">
+<dt>cvtype: string, optional, [def: skfold]</dt>
+<dd><p class="first">Define a cross_validation. Choose between :</p>
+<blockquote class="last">
+<div><ul class="simple">
+<li>&#8216;skfold&#8217;: Stratified k-Fold</li>
+<li>&#8216;kfold&#8217;: k-fold</li>
+<li>&#8216;sss&#8217;: Stratified Shuffle Split</li>
+<li>&#8216;ss&#8217;: Shuffle Split</li>
+</ul>
+</div></blockquote>
+</dd>
+<dt>n_folds: integer, optional, [def: 10]</dt>
+<dd>Number of folds</dd>
+<dt>rndstate: integer, optional, [def: 0]</dt>
+<dd>Define a random state. Usefull to replicate a result</dd>
+<dt>rep: integer, optional, [def: 10]</dt>
+<dd>Number of repetitions</dd>
+</dl>
+<p class="last">kwargs: optional arguments. To define other parameters,
+see the description of scikit-learn.</p>
+</dd>
+<dt>Return:</dt>
+<dd><p class="first">A list of scikit-learn cross-validation objects with two supplementar
+arguments:</p>
+<blockquote class="last">
+<div><ul class="simple">
+<li>lgStr: long description of the cross_validation</li>
+<li>shStr: short description of the cross_validation</li>
+</ul>
+</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="classify">
+<h3>Classify<a class="headerlink" href="#classify" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">classification.</code><code class="descname">classify</code><span class="sig-paren">(</span><em>y</em>, <em>clf='lda'</em>, <em>cvtype='skfold'</em>, <em>clfArg={}</em>, <em>cvArg={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brainpipe/clf/_classification.html#classify"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Define a classification object and apply to classify data.
 This class can be consider as a centralization of scikit-learn
 tools, with a few more options.</p>
@@ -214,8 +310,8 @@ cross-validation. See the documentation of defCv.</dd>
 </dd>
 </dl>
 <dl class="method">
-<dt id="classification.classify.confusion_matrix">
-<code class="descname">confusion_matrix</code><span class="sig-paren">(</span><em>x</em>, <em>mf=False</em>, <em>center=False</em>, <em>grp=array([]</em>, <em>dtype=float64)</em>, <em>n_jobs=-1</em>, <em>normalize=True</em>, <em>update=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/classification.html#classify.confusion_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classification.classify.confusion_matrix" title="Permalink to this definition">¶</a></dt>
+<dt>
+<code class="descname">confusion_matrix</code><span class="sig-paren">(</span><em>x</em>, <em>mf=False</em>, <em>center=False</em>, <em>grp=array([]</em>, <em>dtype=float64)</em>, <em>n_jobs=-1</em>, <em>normalize=True</em>, <em>update=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brainpipe/clf/_classification.html#classify.confusion_matrix"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Get confusion matrix.</p>
 <dl class="docutils">
 <dt>Args:</dt>
@@ -262,8 +358,8 @@ previously found will be used to get confusion matrix.</dd>
 </dd></dl>
 
 <dl class="method">
-<dt id="classification.classify.fit">
-<code class="descname">fit</code><span class="sig-paren">(</span><em>x</em>, <em>mf=False</em>, <em>center=False</em>, <em>grp=array([]</em>, <em>dtype=float64)</em>, <em>n_jobs=-1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/classification.html#classify.fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classification.classify.fit" title="Permalink to this definition">¶</a></dt>
+<dt>
+<code class="descname">fit</code><span class="sig-paren">(</span><em>x</em>, <em>mf=False</em>, <em>center=False</em>, <em>grp=array([]</em>, <em>dtype=float64)</em>, <em>n_jobs=-1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brainpipe/clf/_classification.html#classify.fit"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Apply the classification and cross-validation objects to the array x.
 this method return an array containing the decoding accuracy. The
 dimension of this arry depend of the input x.</p>
@@ -309,10 +405,11 @@ n_jobs = -1, all the jobs are used.</dd>
 </dd></dl>
 
 <dl class="method">
-<dt id="classification.classify.fit_stat">
-<code class="descname">fit_stat</code><span class="sig-paren">(</span><em>x</em>, <em>mf=False</em>, <em>center=False</em>, <em>grp=array([]</em>, <em>dtype=float64)</em>, <em>method='bino'</em>, <em>n_perm=200</em>, <em>rndstate=0</em>, <em>n_jobs=-1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/classification.html#classify.fit_stat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classification.classify.fit_stat" title="Permalink to this definition">¶</a></dt>
+<dt>
+<code class="descname">fit_stat</code><span class="sig-paren">(</span><em>x</em>, <em>mf=False</em>, <em>center=False</em>, <em>grp=array([]</em>, <em>dtype=float64)</em>, <em>method='bino'</em>, <em>n_perm=200</em>, <em>rndstate=0</em>, <em>n_jobs=-1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brainpipe/clf/_classification.html#classify.fit_stat"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Evaluate the statistical significiancy of the decoding accuracy.</p>
-<dl class="docutils">
+<blockquote>
+<div><dl class="docutils">
 <dt>Args:</dt>
 <dd><dl class="first last docutils">
 <dt>x: array</dt>
@@ -370,125 +467,35 @@ n_jobs = -1, all the jobs are used.</dd>
 <dd>Array of associated pvalue</dd>
 <dt>daPerm: array</dt>
 <dd>Array of all the decodings obtained for each permutations.</dd>
-<dt>See:</dt>
-<dd><p class="first">[1] Ojala and Garriga. Permutation Tests for Studying Classifier
-Performance.  The Journal of Machine Learning Research (2010)
-vol. 11</p>
-<p class="last">[2] Combrisson, E., &amp; Jerbi, K. (2015). Exceeding chance level by
-chance: The caveat of theoretical chance levels in brain signal
-classification and statistical assessment of decoding accuracy.
-J Neurosci Methods, doi: 10.1016/j.jneurmeth.2015.01.010.</p>
-</dd>
 </dl>
 </dd>
 </dl>
+</div></blockquote>
+<p class="rubric">Footnotes</p>
+<table class="docutils footnote" frame="void" id="f1" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[1]</td><td>Ojala and Garriga, 2010 <a class="reference external" href="http://www.jmlr.org/papers/volume11/ojala10a/ojala10a.pdf">see</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="f2" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[2]</td><td>Combrisson and Jerbi, 2015 <a class="reference external" href="http://www.ncbi.nlm.nih.gov/pubmed/25596422/">see</a></td></tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
 
+</div>
+<div class="section" id="generalization">
+<h3>Generalization<a class="headerlink" href="#generalization" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
-<dt id="classification.defClf">
-<em class="property">class </em><code class="descclassname">classification.</code><code class="descname">defClf</code><span class="sig-paren">(</span><em>y</em>, <em>clf='lda'</em>, <em>kern='rbf'</em>, <em>n_knn=10</em>, <em>n_tree=100</em>, <em>priors=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/classification.html#defClf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classification.defClf" title="Permalink to this definition">¶</a></dt>
-<dd><p>Choose a classifier and switch easyly between classifiers
-implemented in scikit-learn.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><dl class="first last docutils">
-<dt>y: array</dt>
-<dd>The vector label</dd>
-</dl>
-</dd>
-<dt>clf: int or string, optional, [def: 0]</dt>
-<dd><p class="first">Define a classifier. Use either an integer or a string
-Choose between:</p>
-<blockquote class="last">
-<div><ul class="simple">
-<li>0 / &#8216;lda&#8217;: Linear Discriminant Analysis (LDA)</li>
-<li>1 / &#8216;svm&#8217;: Support Vector Machine (SVM)</li>
-<li>2 / &#8216;linearsvm&#8217; : Linear SVM</li>
-<li>3 / &#8216;nusvm&#8217;: Nu SVM</li>
-<li>4 / &#8216;nb&#8217;: Naive Bayesian</li>
-<li>5 / &#8216;knn&#8217;: k-Nearest Neighbor</li>
-<li>6 / &#8216;rf&#8217;: Random Forest</li>
-<li>7 / &#8216;lr&#8217;: Logistic Regression</li>
-<li>8 / &#8216;qda&#8217;: Quadratic Discriminant Analysis</li>
-</ul>
-</div></blockquote>
-</dd>
-<dt>kern: string, optional, [def: &#8216;rbf&#8217;]</dt>
-<dd>Kernel of the &#8216;svm&#8217; classifier</dd>
-<dt>n_knn: int, optional, [def: 10]</dt>
-<dd>Number of neighbors for the &#8216;knn&#8217; classifier</dd>
-<dt>n_tree: int, optional, [def: 100]</dt>
-<dd>Number of trees for the &#8216;rf&#8217; classifier</dd>
-<dt>Kargs:</dt>
-<dd>optional arguments. To define other parameters, see the description of
-scikit-learn.</dd>
-<dt>Return:</dt>
-<dd><p class="first">A scikit-learn classification objects with two supplementar arguments :</p>
-<blockquote class="last">
-<div><ul class="simple">
-<li>lgStr : long description of the classifier</li>
-<li>shStr : short description of the classifier</li>
-</ul>
-</div></blockquote>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="class">
-<dt id="classification.defCv">
-<em class="property">class </em><code class="descclassname">classification.</code><code class="descname">defCv</code><span class="sig-paren">(</span><em>y</em>, <em>cvtype='skfold'</em>, <em>n_folds=10</em>, <em>rndstate=0</em>, <em>rep=10</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/classification.html#defCv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classification.defCv" title="Permalink to this definition">¶</a></dt>
-<dd><p>Choose a cross_validation (CV) and switch easyly between
-CV implemented in scikit-learn.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><dl class="first last docutils">
-<dt>y: array</dt>
-<dd>The vector label</dd>
-</dl>
-</dd>
-<dt>kargs:</dt>
-<dd><dl class="first docutils">
-<dt>cvtype: string, optional, [def: skfold]</dt>
-<dd><p class="first">Define a cross_validation. Choose between :</p>
-<blockquote class="last">
-<div><ul class="simple">
-<li>&#8216;skfold&#8217;: Stratified k-Fold</li>
-<li>&#8216;kfold&#8217;: k-fold</li>
-<li>&#8216;sss&#8217;: Stratified Shuffle Split</li>
-<li>&#8216;ss&#8217;: Shuffle Split</li>
-</ul>
-</div></blockquote>
-</dd>
-<dt>n_folds: integer, optional, [def: 10]</dt>
-<dd>Number of folds</dd>
-<dt>rndstate: integer, optional, [def: 0]</dt>
-<dd>Define a random state. Usefull to replicate a result</dd>
-<dt>rep: integer, optional, [def: 10]</dt>
-<dd>Number of repetitions</dd>
-</dl>
-<p class="last">kwargs: optional arguments. To define other parameters,
-see the description of scikit-learn.</p>
-</dd>
-<dt>Return:</dt>
-<dd><p class="first">A list of scikit-learn cross-validation objects with two supplementar
-arguments:</p>
-<blockquote class="last">
-<div><ul class="simple">
-<li>lgStr: long description of the cross_validation</li>
-<li>shStr: short description of the cross_validation</li>
-</ul>
-</div></blockquote>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="class">
-<dt id="classification.timegeneralization">
-<em class="property">class </em><code class="descclassname">classification.</code><code class="descname">timegeneralization</code><span class="sig-paren">(</span><em>time</em>, <em>y</em>, <em>x</em>, <em>clf='lda'</em>, <em>cvtype=None</em>, <em>clfArg={}</em>, <em>cvArg={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/classification.html#timegeneralization"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classification.timegeneralization" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generalize accross time the decoding performance of features.
-The time generalization consist of training and testing at diffrents
+<dt>
+<em class="property">class </em><code class="descclassname">classification.</code><code class="descname">generalization</code><span class="sig-paren">(</span><em>time</em>, <em>y</em>, <em>x</em>, <em>clf='lda'</em>, <em>cvtype=None</em>, <em>clfArg={}</em>, <em>cvArg={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brainpipe/clf/_classification.html#generalization"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Generalize the decoding performance of features.
+The generalization consist of training and testing at diffrents
 moments. The use is to see if a feature is consistent and performant
 in diffrents period of time.</p>
 <dl class="docutils">
@@ -535,23 +542,247 @@ as &#8220;generalization time&#8221;)</dd>
 
 </div>
 </div>
+<div class="section" id="multi-features">
+<h2>Multi-features<a class="headerlink" href="#multi-features" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">classification.</code><code class="descname">mf</code><span class="sig-paren">(</span><em>y</em>, <em>Id='0'</em>, <em>p=0.05</em>, <em>n_perm=200</em>, <em>stat='bino'</em>, <em>threshold=None</em>, <em>nbest=10</em>, <em>direction='forward'</em>, <em>occurence='i%'</em>, <em>clfIn={'clf': 'lda'}</em>, <em>clfOut={'clf': 'lda'}</em>, <em>cvIn={'cvtype': 'skfold'</em>, <em>'n_folds': 10</em>, <em>'rep': 1}</em>, <em>cvOut={'cvtype': 'skfold'</em>, <em>'n_folds': 10</em>, <em>'rep': 10}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brainpipe/clf/_multifeatures.html#mf"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Compute multi-features (mf) with the possibility of using methods in
+cascade and run the mf on particular groups.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>y: array-like</dt>
+<dd>The target variable to try to predict in the case of
+supervised learning</dd>
+</dl>
+</dd>
+<dt>Kargs:</dt>
+<dd><dl class="first last docutils">
+<dt>Id: string, optional, [def: &#8216;0&#8217;]</dt>
+<dd><p class="first">Use this parameter to define a cascade of methods. Here is the list
+of the current implemented methods:</p>
+<ul class="simple">
+<li>&#8216;0&#8217;: No selection. All the features are used</li>
+<li>&#8216;1&#8217;: Select &lt;p significant features using either a binomial law or permutations</li>
+<li>&#8216;2&#8217;: select &#8216;nbest&#8217; features</li>
+<li>&#8216;3&#8217;: use &#8216;forward&#8217;/&#8217;backward&#8217;/&#8217;exhaustive&#8217; to  select features</li>
+</ul>
+<p class="last">If is for example Id=&#8216;12&#8217;, the program will first select significants
+features, then, on this subset, it will find the nbest features. All
+the methods can be serialized.</p>
+</dd>
+<dt>p: float, optional, [def: 0.05]</dt>
+<dd>The pvalue to select features for the Id=&#8216;1&#8217; method</dd>
+<dt>n_perm: integer, optional, [def: 200]</dt>
+<dd>Number of permutations for the Id=&#8216;1&#8217; method</dd>
+<dt>stat</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">string, optional, [def: &#8216;bino&#8217;]</span><dd><p class="first">Statisical test for selecting features for the Id=&#8216;1&#8217; method. Choose
+between:</p>
+<ul class="simple">
+<li>&#8216;bino&#8217;: binomial test</li>
+<li>&#8216;label_rnd&#8217;: randomly shuffle the labels</li>
+<li>&#8216;full_rnd&#8217;: randomly shuffle the whole array x</li>
+<li>&#8216;intra_rnd&#8217;: randomly shuffle x inside each class and each feature</li>
+</ul>
+<p class="last">Methods 2, 3 and 4 are based on permutations. The method 2 and 3
+should provide similar results. But 4 should be more conservative.</p>
+</dd>
+<dt>threshold: integer/float, optional, [def: None]</dt>
+<dd>Define a decoding accuracy for thresholding features. equivalent to the
+p parameter.</dd>
+<dt>nbest: integer, optional, [def: 10]</dt>
+<dd>For the Id=&#8216;2&#8217;, use this parameter to control the number of features
+to select. If nbest=10, the program will classify each feature and then
+select the 10 best of them.</dd>
+<dt>direction: string, optional, [def: &#8216;forward&#8217;]</dt>
+<dd><p class="first">For the method Id=&#8216;3&#8217;, use:</p>
+<ul class="simple">
+<li>&#8216;forward&#8217;</li>
+<li>&#8216;backward&#8217;</li>
+<li>&#8216;exhaustive&#8217;</li>
+</ul>
+<p class="last">to control the direction of the feature selection.</p>
+</dd>
+<dt>occurence: string, optional, [def: &#8216;i%&#8217;]</dt>
+<dd><p class="first">Use this parameter to modify the way of visualizing the occurence of
+each feature apparition. Choose between :</p>
+<ul class="last simple">
+<li>&#8216;%&#8217; : in percentage (float)</li>
+<li>&#8216;i%&#8217; : in integer percentage (int)</li>
+<li>&#8216;c&#8217; : count (= number of times the feature has been selected)</li>
+</ul>
+</dd>
+<dt>clfIn // clfOut</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">dictionnary, optional</span><dd><p class="first">Use those dictionnaries to control the classifier to use.</p>
+<blockquote>
+<div><ul class="simple">
+<li>clfIn : the classifier use for the training [def: LDA]</li>
+<li>clfOut : the classifier use for the testing [def: LDA]</li>
+</ul>
+</div></blockquote>
+<p class="last">To have more controlable classifiers, see the defClf() class inside
+the classification module.</p>
+</dd>
+<dt>cvIn // cvOut</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">dictionnary, optional</span><dd><p class="first">Use those dictionnaries to control the cross-validations (cv) to use.</p>
+<ul>
+<li><dl class="first docutils">
+<dt>cvIn</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">the cv to use for the training [def: 1 time stratified</span><dd><p class="first last">10-folds]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>cvOut</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">the more extern cv, to separate training and testing and</span><dd><p class="first last">to avoid over-fitting [def: 10 time stratified 10-folds]</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p class="last">To have more controlable cross-validation, see the defCv() class inside
+the classification module.</p>
+</dd>
+</dl>
+</dd>
+<dt>Return</dt>
+<dd>A multi-features object with a fit() method to apply to model to the data.</dd>
+</dl>
+<dl class="method">
+<dt>
+<code class="descname">fit</code><span class="sig-paren">(</span><em>x</em>, <em>grp=[]</em>, <em>center=False</em>, <em>combine=False</em>, <em>grpas='single'</em>, <em>grplen=[]</em>, <em>display=True</em>, <em>n_jobs=-1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brainpipe/clf/_multifeatures.html#mf.fit"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Run the model on the matrix of features x</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>x: array-like</dt>
+<dd>The features. Dimension [n trials x n features]</dd>
+</dl>
+</dd>
+<dt>Kargs:</dt>
+<dd><dl class="first last docutils">
+<dt>grp: list of strings, optional, [def: []]</dt>
+<dd>Group features by using a list of strings. The length of grp must
+be the same as the number of features. If grp is not empty, the
+program will run the feature selection inside each group.</dd>
+<dt>center: optional, bool, [def: False]</dt>
+<dd>Normalize fatures with a zero mean by substracting then dividing
+by the mean. The center parameter should be set to True if the
+classifier is a svm.</dd>
+<dt>combine: boolean, optional, [def: False]</dt>
+<dd>If a group of features is specified using the grp parameter,
+combine give the access of combining or not groups. For example,
+if there is three unique groups, combining them will compute the mf
+model on each combination : [[1],[2],[3],[1,2],[1,3],[2,3],[1,2,3]]</dd>
+<dt>grpas: string, optional, [def: &#8216;single&#8217;]</dt>
+<dd><p class="first">Specify how to consider features inside each group. If the
+parameter grpas (&#8220;group as&#8221;) is:</p>
+<blockquote class="last">
+<div><ul class="simple">
+<li>&#8216;single&#8217;: inside each combination of group, the features are considered as independant.</li>
+<li>&#8216;group&#8217;: inside each combination of group, the features are going to be associated. So the mf model will search to add a one by one feature, but it will add groups of features.</li>
+</ul>
+</div></blockquote>
+</dd>
+<dt>grplen: list, optional, [def: []]</dt>
+<dd>Control the number of combinations by specifying the number of
+elements to associate. If there is three unique groups, all
+possible combinations are : [[1],[2],[3],[1,2],[1,3],[2,3],[1,2,3]]
+but if grplen is specify, for example grplen=[1,3], this will
+consider combinations of groups only with a length of 1 and 3 and
+remove combinations of 2 elements: [[1],[2],[3],[1,2,3]]</dd>
+<dt>display: boolean, optional, [def: True]</dt>
+<dd>Display informations for each step of the mf selection. If n_jobs
+is -1, it is advise to set the display to False.</dd>
+<dt>n_jobs: integer, optional, [def: -1]</dt>
+<dd>Control the number of jobs to cumpute the decoding accuracy. If
+n_jobs=-1, all the jobs are used.</dd>
+</dl>
+</dd>
+<dt>Returns:</dt>
+<dd><dl class="first last docutils">
+<dt>da: list</dt>
+<dd>The decoding accuracy (da) for each group with the selected number
+of repetitions, which by default is set to 10 (see : cvOut // rep)</dd>
+<dt>prob: list</dt>
+<dd>The appearance probability of each feature. The size of prob is the
+same as da.</dd>
+<dt>groupinfo: pandas Dataframe</dt>
+<dd>Dataframe to resume the mf feature selection.</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
 
+</dd></dl>
 
-    </div>
-      
-  </div>
 </div>
-<footer class="footer">
-  <div class="container">
-    <p class="pull-right">
-      <a href="#">Back to top</a>
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-    </p>
+        <a href="stat.html" class="btn btn-neutral float-right" title="Statistics">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="feature.html" class="btn btn-neutral" title="Neuronal Features"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
     <p>
-        &copy; Copyright 2016, Etienne Combrisson.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.<br/>
+        &copy; Copyright 2016, Etienne Combrisson.
     </p>
   </div>
+
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
 </footer>
-  </body>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.0.25',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
 </html>
