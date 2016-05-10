@@ -99,6 +99,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Visualization</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#border-plot">Border plot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#add-lines">Add lines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#tilerplot">tilerplot</a></li>
 </ul>
 </li>
 </ul>
@@ -154,6 +155,7 @@
 <ul class="simple">
 <li><a class="reference internal" href="#borderplt"><span class="std std-ref">Border plot</span></a></li>
 <li><a class="reference internal" href="#addline"><span class="std std-ref">Add lines</span></a></li>
+<li><a class="reference internal" href="#tilerplot"><span class="std std-ref">tilerplot</span></a></li>
 </ul>
 <div class="section" id="border-plot">
 <span id="borderplt"></span><h2>Border plot<a class="headerlink" href="#border-plot" title="Permalink to this headline">¶</a></h2>
@@ -223,13 +225,13 @@ of legend must be the same as the length of unique classes in y.</dd>
 <dt>yticklabels:</dt>
 <dd>label of the y-ticks [def: [], current y-ticklabels]</dd>
 <dt>style:</dt>
-<dd>style of the plot [def: &#8216;seaborn-poster&#8217;]</dd>
+<dd>style of the plot [def: None]</dd>
 </dl>
 </dd>
 </dl>
 </dd></dl>
 
-<div class="figure align-center" id="id3">
+<div class="figure align-center" id="id8">
 <img alt="_images/borderplot.png" src="_images/borderplot.png" />
 <p class="caption"><span class="caption-text">Border plot example</span></p>
 </div>
@@ -274,18 +276,121 @@ hShape list must be the same as the length of hLines</dd>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span> <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">addLines</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">(),</span> <span class="n">vLines</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="o">-</span><span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span> <span class="n">vColor</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="s1">&#39;g&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">],</span>
-<span class="go">             vWidth=[5, 4, 3, 2, 1], vShape=[&#39;-&#39;, &#39;-&#39;, &#39;--&#39;, &#39;-&#39;, &#39;--&#39;],</span>
-<span class="go">             hLines=[0, -0.5, 0.7], hColor=[&#39;k&#39;, &#39;r&#39;, &#39;g&#39;], hWidth=[5, 4, 3],</span>
-<span class="go">             hShape=[&#39;-&#39;, &#39;-&#39;, &#39;--&#39;])</span>
+<span class="gp">&gt;&gt;&gt; </span>         <span class="n">vWidth</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">vShape</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;--&#39;</span><span class="p">],</span>
+<span class="gp">&gt;&gt;&gt; </span>         <span class="n">hLines</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">],</span> <span class="n">hColor</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="s1">&#39;g&#39;</span><span class="p">],</span> <span class="n">hWidth</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+<span class="gp">&gt;&gt;&gt; </span>         <span class="n">hShape</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;--&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
 </dd>
 </dl>
 </dd></dl>
 
-<div class="figure align-center" id="id4">
+<div class="figure align-center" id="id9">
 <img alt="_images/lines.png" src="_images/lines.png" />
 <p class="caption"><span class="caption-text">Quickly add some lines to your plot</span></p>
+</div>
+</div>
+<div class="section" id="tilerplot">
+<span id="id3"></span><h2>tilerplot<a class="headerlink" href="#tilerplot" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">visual.</code><code class="descname">tilerplot</code><a class="reference internal" href="_modules/brainpipe/visu/cmon_plt.html#tilerplot"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Automatic tiler plot for 1, 2 and 3D data.</p>
+<dl class="method">
+<dt>
+<code class="descname">plot1D</code><span class="sig-paren">(</span><em>fig</em>, <em>y</em>, <em>x=None</em>, <em>maxplot=10</em>, <em>figtitle=''</em>, <em>subdim=None</em>, <em>transpose=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brainpipe/visu/cmon_plt.html#tilerplot.plot1D"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Simple one dimentional plot</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>y: array</dt>
+<dd>Data to plot. y can either have one, two or three dimensions.
+If y is a vector, it will be plot in a simple window. If y is
+a matrix, all values inside are going to be superimpose. If y
+is a 3D matrix, the first dimension control the number of subplots.</dd>
+<dt>x: array, optional, [def: None]</dt>
+<dd>x vector for plotting data.</dd>
+</dl>
+</dd>
+<dt>Kargs:</dt>
+<dd><dl class="first last docutils">
+<dt>figtitle: string, optional, [def: &#8216;&#8217;]</dt>
+<dd>Add a name to your figure</dd>
+<dt>subdim: tuple, optional, [def: None]</dt>
+<dd>Force subplots to be subdim=(n_colums, n_rows)</dd>
+<dt>maxplot: int, optional, [def: 10]</dt>
+<dd>Control the maximum number of subplot to prevent very large plot.
+By default, maxplot is 10 which mean that only 10 subplot can be
+defined.</dd>
+<dt>transpose: bool, optional, [def: False]</dt>
+<dd>Invert subplot (row &lt;-&gt; column)</dd>
+<dt><a href="#id4"><span class="problematic" id="id5">**</span></a>kwargs:</dt>
+<dd>Supplementar arguments to control each suplot:
+title, xlabel, ylabel (which can be list for each subplot)
+xlim, ylim, xticks, yticks, xticklabels, yticklabels, style.</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">plot2D</code><span class="sig-paren">(</span><em>fig</em>, <em>y</em>, <em>xvec=None</em>, <em>yvec=None</em>, <em>cmap='inferno'</em>, <em>colorbar=True</em>, <em>vmin=None</em>, <em>vmax=None</em>, <em>cblabel=''</em>, <em>subdim=None</em>, <em>interpolation='none'</em>, <em>resample=(0</em>, <em>0)</em>, <em>figtitle=''</em>, <em>transpose=False</em>, <em>maxplot=10</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brainpipe/visu/cmon_plt.html#tilerplot.plot2D"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Plot y as an image</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>fig: figure</dt>
+<dd>A matplotlib figure where plotting</dd>
+<dt>y: array</dt>
+<dd>Data to plot. y can either have one, two or three dimensions.
+If y is a vector, it will be plot in a simple window. If y is
+a matrix, all values inside are going to be superimpose. If y
+is a 3D matrix, the first dimension control the number of subplots.</dd>
+</dl>
+</dd>
+<dt>Kargs:</dt>
+<dd><dl class="first last docutils">
+<dt>xvec, yvec: array, optional, [def: None]</dt>
+<dd>Vectors for y and x axis of each picture</dd>
+<dt>cmap: string, optional, [def: &#8216;inferno&#8217;]</dt>
+<dd>Choice of the colormap</dd>
+<dt>colorbar: bool, optional, [def: True]</dt>
+<dd>Add or not a colorbar to your plot</dd>
+<dt>vmin, vmax: int/float, optional, [def: None]</dt>
+<dd>Control minimum and maximum of the image</dd>
+<dt>cblabel: string, optional, [def: &#8216;&#8217;]</dt>
+<dd>Label for the colorbar</dd>
+<dt>subdim: tuple, optional, [def: None]</dt>
+<dd>Force subplots to be subdim=(n_colums, n_rows)</dd>
+<dt>interpolation: string, optional, [def: &#8216;none&#8217;]</dt>
+<dd>Plot interpolation</dd>
+<dt>resample: tuple, optional, [def: (0, 0)]</dt>
+<dd>Interpolate the map for a specific dimension. If (0.5, 0.1),
+this mean that the programme will insert one new point on x-axis,
+and 10 new points on y-axis. Pimp you map and make it sooo smooth.</dd>
+<dt>figtitle: string, optional, [def: &#8216;&#8217;]</dt>
+<dd>Add a name to your figure</dd>
+<dt>maxplot: int, optional, [def: 10]</dt>
+<dd>Control the maximum number of subplot to prevent very large plot.
+By default, maxplot is 10 which mean that only 10 subplot can be
+defined.</dd>
+<dt>transpose: bool, optional, [def: False]</dt>
+<dd>Invert subplot (row &lt;-&gt; column)</dd>
+<dt><a href="#id6"><span class="problematic" id="id7">**</span></a>kwargs:</dt>
+<dd>Supplementar arguments to control each suplot:
+title, xlabel, ylabel (which can be list for each subplot)
+xlim, ylim, xticks, yticks, xticklabels, yticklabels, style.</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<div class="figure align-center" id="id10">
+<img alt="_images/plot2D.png" src="_images/plot2D.png" />
+<p class="caption"><span class="caption-text">Automatic 1D and 2D plot</span></p>
 </div>
 </div>
 </div>

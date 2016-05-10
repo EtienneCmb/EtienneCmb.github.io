@@ -98,6 +98,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../visualization.html">Visualization</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../visualization.html#border-plot">Border plot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../visualization.html#add-lines">Add lines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../visualization.html#tilerplot">tilerplot</a></li>
 </ul>
 </li>
 </ul>
@@ -156,6 +157,8 @@
 <span class="kn">from</span> <span class="nn">brainpipe.feat.filtering</span> <span class="kn">import</span> <span class="n">fextract</span><span class="p">,</span> <span class="n">docfilter</span>
 <span class="kn">from</span> <span class="nn">brainpipe.feat.coupling.pac._pac</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">brainpipe.feat.coupling.pac.pacmeth</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">brainpipe.visu.cmon_plt</span> <span class="kn">import</span> <span class="n">tilerplot</span>
+<span class="kn">from</span> <span class="nn">brainpipe.tools</span> <span class="kn">import</span> <span class="n">binarize</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;pac&#39;</span><span class="p">]</span>
 
@@ -187,7 +190,7 @@
 <span class="s2">&quot;&quot;&quot;</span>
 
 
-<span class="k">class</span> <span class="nc">_coupling</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">_coupling</span><span class="p">(</span><span class="n">tilerplot</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -217,6 +220,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_sf</span> <span class="o">=</span> <span class="n">sf</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_npts</span> <span class="o">=</span> <span class="n">npts</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_nwin</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_window</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pha</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pha</span><span class="o">.</span><span class="n">f</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">amp</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_amp</span><span class="o">.</span><span class="n">f</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="pac"><a class="viewcode-back" href="../../../../feature.html#feature.pac">[docs]</a><span class="k">class</span> <span class="nc">pac</span><span class="p">(</span><span class="n">_coupling</span><span class="p">):</span>
@@ -307,6 +312,13 @@
         <span class="n">_checkref</span><span class="p">(</span><span class="s1">&#39;pha_meth&#39;</span><span class="p">,</span> <span class="n">pha_meth</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;hilbert&#39;</span><span class="p">,</span> <span class="s1">&#39;hilbert1&#39;</span><span class="p">,</span> <span class="s1">&#39;hilbert2&#39;</span><span class="p">])</span>
         <span class="n">_checkref</span><span class="p">(</span><span class="s1">&#39;amp_meth&#39;</span><span class="p">,</span> <span class="n">amp_meth</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;hilbert&#39;</span><span class="p">,</span> <span class="s1">&#39;hilbert1&#39;</span><span class="p">,</span> <span class="s1">&#39;hilbert2&#39;</span><span class="p">])</span>
 
+        <span class="c1"># Check the type of f:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pha_f</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pha_f</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+            <span class="n">pha_f</span> <span class="o">=</span> <span class="n">binarize</span><span class="p">(</span><span class="n">pha_f</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pha_f</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">pha_f</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">pha_f</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;list&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">amp_f</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">amp_f</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+            <span class="n">amp_f</span> <span class="o">=</span> <span class="n">binarize</span><span class="p">(</span><span class="n">amp_f</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">amp_f</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">amp_f</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">amp_f</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;list&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xvec</span> <span class="o">=</span> <span class="p">[]</span>
+
         <span class="c1"># Initalize pac object :</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">Id</span> <span class="o">=</span> <span class="n">Id</span>
         <span class="n">pha_kind</span> <span class="o">=</span> <span class="s1">&#39;phase&#39;</span>
@@ -386,7 +398,7 @@
         <span class="n">uCfc</span><span class="p">,</span> <span class="n">Suro</span><span class="p">,</span> <span class="n">mSuro</span><span class="p">,</span> <span class="n">stdSuro</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">cfcsu</span><span class="p">)</span>
 
         <span class="c1"># Compute permutations :</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_perm</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_perm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">uCfc</span><span class="p">,</span> <span class="n">Suro</span><span class="p">,</span> <span class="n">mSuro</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">uCfc</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Suro</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">mSuro</span><span class="p">)</span>
             <span class="n">stdSuro</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">stdSuro</span><span class="p">)</span>
 
@@ -400,7 +412,7 @@
 
             <span class="k">return</span> <span class="n">nCfc</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">pvalue</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">uCfc</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="bp">None</span></div></div>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">uCfc</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="bp">None</span></div></div>
 </pre></div>
 
           </div>

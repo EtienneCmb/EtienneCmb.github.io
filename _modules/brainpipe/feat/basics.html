@@ -98,6 +98,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../visualization.html">Visualization</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../visualization.html#border-plot">Border plot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../visualization.html#add-lines">Add lines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../visualization.html#tilerplot">tilerplot</a></li>
 </ul>
 </li>
 </ul>
@@ -150,6 +151,7 @@
 <span class="kn">from</span> <span class="nn">brainpipe.tools</span> <span class="kn">import</span> <span class="n">binarize</span><span class="p">,</span> <span class="n">binArray</span>
 <span class="kn">from</span> <span class="nn">brainpipe.feat.utils._feat</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_manageWindow</span><span class="p">,</span> <span class="n">_manageFrequencies</span><span class="p">,</span>
                                         <span class="n">normalize</span><span class="p">,</span> <span class="n">_checkref</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">brainpipe.visu.cmon_plt</span> <span class="kn">import</span> <span class="n">tilerplot</span>
 
 <span class="kn">from</span> <span class="nn">joblib</span> <span class="kn">import</span> <span class="n">Parallel</span><span class="p">,</span> <span class="n">delayed</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
@@ -188,7 +190,7 @@
 <span class="c1"># ------------------------------------------------------------</span>
 <span class="c1"># MAIN SPECTRAL CLASS</span>
 <span class="c1"># ------------------------------------------------------------</span>
-<span class="k">class</span> <span class="nc">_spectral</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">_spectral</span><span class="p">(</span><span class="n">tilerplot</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;This class is optimized for 3D arrays.</span>
 
 <span class="sd">    Args:</span>
@@ -250,7 +252,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_kind</span> <span class="o">=</span> <span class="n">kind</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_fobj</span> <span class="o">=</span> <span class="n">fextract</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_meanT</span> <span class="o">=</span> <span class="n">meanT</span>
-        <span class="c1"># ndplot.__init__(self, self._kind)</span>
 
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">extractStr</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fobj</span><span class="p">)</span>
@@ -313,13 +314,17 @@
         <span class="n">nfeat</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="c1"># Check statistical method :</span>
         <span class="n">_checkref</span><span class="p">(</span><span class="s1">&#39;statmeth&#39;</span><span class="p">,</span> <span class="n">statmeth</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;permutation&#39;</span><span class="p">,</span> <span class="s1">&#39;wilcoxon&#39;</span><span class="p">,</span> <span class="s1">&#39;kruskal&#39;</span><span class="p">])</span>
-
+        <span class="c1"># run feature computation:</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">Parallel</span><span class="p">(</span><span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">)(</span>
             <span class="n">delayed</span><span class="p">(</span><span class="n">_get</span><span class="p">)(</span><span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="bp">self</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nfeat</span><span class="p">))</span>
         <span class="c1"># xF, pvalues = zip(*data)</span>
-        <span class="n">xF</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="c1"># Re-organize data :</span>
+        <span class="n">xF</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># Remove last dimension (for TF):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meanT</span><span class="p">:</span>
+            <span class="n">xF</span> <span class="o">=</span> <span class="n">xF</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
 
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">xF</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># , np.swapaxes(np.array(pvalues), 0, 1)</span>
+        <span class="k">return</span> <span class="n">xF</span>  <span class="c1"># , np.swapaxes(np.array(pvalues), 0, 1)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">freqvec</span><span class="p">(</span><span class="n">fstart</span><span class="p">,</span> <span class="n">fend</span><span class="p">,</span> <span class="n">fwidth</span><span class="p">,</span> <span class="n">fstep</span><span class="p">):</span>
@@ -430,11 +435,11 @@
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sf</span><span class="p">,</span> <span class="n">npts</span><span class="p">,</span> <span class="n">f</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">baseline</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">norm</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
                  <span class="n">method</span><span class="o">=</span><span class="s1">&#39;hilbert1&#39;</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
-                 <span class="n">split</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                 <span class="n">time</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">_checkref</span><span class="p">(</span><span class="s1">&#39;method&#39;</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;hilbert&#39;</span><span class="p">,</span> <span class="s1">&#39;hilbert1&#39;</span><span class="p">,</span> <span class="s1">&#39;hilbert2&#39;</span><span class="p">,</span>
                   <span class="s1">&#39;wavelet&#39;</span><span class="p">])</span>
         <span class="n">_spectral</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sf</span><span class="p">,</span> <span class="n">npts</span><span class="p">,</span> <span class="s1">&#39;power&#39;</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">baseline</span><span class="p">,</span> <span class="n">norm</span><span class="p">,</span>
-                           <span class="n">method</span><span class="p">,</span> <span class="n">window</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">split</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span>
+                           <span class="n">method</span><span class="p">,</span> <span class="n">window</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span>
                            <span class="bp">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
