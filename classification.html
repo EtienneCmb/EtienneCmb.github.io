@@ -347,7 +347,7 @@ by the mean. The center parameter should be set to True if the
 classifier is a svm.</dd>
 <dt>grp: array, optional, [def: array()]</dt>
 <dd>If mf=True, the grp parameter allow to define group of features.
-If x.shape = (N, 5) and grp=n.array([0,0,1,2,1]), this mean that
+If x.shape = (N, 5) and grp=np.array([0,0,1,2,1]), this mean that
 3 groups of features will be considered : (0,1,2)</dd>
 <dt>n_jobs: integer, optional, [def: -1]</dt>
 <dd>Control the number of jobs to cumpute the decoding accuracy. If
@@ -397,7 +397,7 @@ by the mean. The center parameter should be set to True if the
 classifier is a svm.</dd>
 <dt>grp: array, optional, [def: array()]</dt>
 <dd>If mf=True, the grp parameter allow to define group of features.
-If x.shape = (N, 5) and grp=n.array([0,0,1,2,1]), this mean that
+If x.shape = (N, 5) and grp=np.array([0,0,1,2,1]), this mean that
 3 groups of features will be considered : (0,1,2)</dd>
 <dt>n_jobs: integer, optional, [def: -1]</dt>
 <dd>Control the number of jobs to cumpute the decoding accuracy. If
@@ -443,7 +443,7 @@ by the mean. The center parameter should be set to True if the
 classifier is a svm.</dd>
 <dt>grp: array, optional, [def: array()]</dt>
 <dd>If mf=True, the grp parameter allow to define group of features.
-If x.shape = (N, 5) and grp=n.array([0,0,1,2,1]), this mean that
+If x.shape = (N, 5) and grp=np.array([0,0,1,2,1]), this mean that
 3 groups of features will be considered : (0,1,2)</dd>
 <dt>method: string, optional, [def: &#8216;bino&#8217;]</dt>
 <dd><p class="first">Four methods are implemented to test the statistical significiance
@@ -555,7 +555,7 @@ as &#8220;generalization time&#8221;)</dd>
 <h2>Multi-features<a class="headerlink" href="#multi-features" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt>
-<em class="property">class </em><code class="descclassname">classification.</code><code class="descname">mf</code><span class="sig-paren">(</span><em>y</em>, <em>Id='0'</em>, <em>p=0.05</em>, <em>n_perm=200</em>, <em>stat='bino'</em>, <em>threshold=None</em>, <em>nbest=10</em>, <em>direction='forward'</em>, <em>occurence='i%'</em>, <em>clfIn={'clf': 'lda'}</em>, <em>clfOut={'clf': 'lda'}</em>, <em>cvIn={'rep': 1</em>, <em>'n_folds': 10</em>, <em>'cvtype': 'skfold'}</em>, <em>cvOut={'rep': 10</em>, <em>'n_folds': 10</em>, <em>'cvtype': 'skfold'}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brainpipe/clf/_multifeatures.html#mf"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">class </em><code class="descclassname">classification.</code><code class="descname">mf</code><span class="sig-paren">(</span><em>y</em>, <em>Id='0'</em>, <em>p=0.05</em>, <em>n_perm=200</em>, <em>stat='bino'</em>, <em>threshold=None</em>, <em>nbest=10</em>, <em>direction='forward'</em>, <em>occurence='i%'</em>, <em>clfIn={'clf': 'lda'}</em>, <em>clfOut={'clf': 'lda'}</em>, <em>cvIn={'rep': 1</em>, <em>'cvtype': 'skfold'</em>, <em>'n_folds': 10}</em>, <em>cvOut={'rep': 10</em>, <em>'cvtype': 'skfold'</em>, <em>'n_folds': 10}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brainpipe/clf/_multifeatures.html#mf"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Compute multi-features (mf) with the possibility of using methods in
 cascade and run the mf on particular groups.</p>
 <dl class="docutils">

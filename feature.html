@@ -931,10 +931,10 @@ three digits [ex : Id=&#8216;210&#8217;]</p>
 <div><ul class="simple">
 <li>&#8216;1&#8217;: Modulation Index <a class="footnote-reference" href="#f1" id="id5">[1]</a></li>
 <li>&#8216;2&#8217;: Kullback-Leibler Distance <a class="footnote-reference" href="#f2" id="id6">[2]</a></li>
-<li>&#8216;3&#8217;: Phase synchrony</li>
-<li>&#8216;4&#8217;: Amplitude PSD</li>
-<li>&#8216;5&#8217;: Heights Ratio</li>
-<li>&#8216;6&#8217;: ndPAC <a class="footnote-reference" href="#f3" id="id7">[3]</a></li>
+<li>&#8216;3&#8217;: Heights Ratio</li>
+<li>&#8216;4&#8217;: Phase synchrony</li>
+<li>&#8216;5&#8217;: ndPAC <a class="footnote-reference" href="#f3" id="id7">[3]</a></li>
+<li>&#8216;6&#8217;: Amplitude PSD</li>
 </ul>
 </div></blockquote>
 </li>
@@ -1037,7 +1037,7 @@ is only avaible for the &#8216;fir1&#8217; method</dd>
 </table>
 <dl class="method">
 <dt>
-<code class="descname">get</code><span class="sig-paren">(</span><em>xpha</em>, <em>xamp</em>, <em>n_perm=200</em>, <em>n_jobs=-1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brainpipe/feat/coupling/cfc.html#pac.get"><span class="viewcode-link">[source]</span></a></dt>
+<code class="descname">get</code><span class="sig-paren">(</span><em>xpha</em>, <em>xamp</em>, <em>n_perm=200</em>, <em>p=0.05</em>, <em>n_jobs=-1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brainpipe/feat/coupling/cfc.html#pac.get"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Get the normalized cfc mesure between an xpha and xamp signals.</p>
 <dl class="docutils">
 <dt>Args:</dt>
@@ -1054,6 +1054,8 @@ is only avaible for the &#8216;fir1&#8217; method</dd>
 <dd><dl class="first docutils">
 <dt>n_perm: integer, optional, [def: 200]</dt>
 <dd>Number of permutations for normalizing the cfc mesure.</dd>
+<dt>p: float, optional, [def: 0.05]</dt>
+<dd>p-value for the statistical method of Ozkurt 2012.</dd>
 <dt>n_jobs: integer, optional, [def: -1]</dt>
 <dd>Control the number of jobs for parallel computing. Use 1, 2, ..
 depending of your number or cores. -1 for all the cores.</dd>
@@ -1065,10 +1067,10 @@ the program compute a local cfc.</p>
 <dd><dl class="first last docutils">
 <dt>ncfc: array</dt>
 <dd>The unormalized cfc mesure of size :
-(n_phase x n_amplitude x n_electrodes x n_windows x n_trials)</dd>
+(n_amplitude x n_phase x n_electrodes x n_windows x n_trials)</dd>
 <dt>pvalue: array</dt>
 <dd>The associated p-values of size :
-(n_phase x n_amplitude x n_electrodes x n_windows)</dd>
+(n_amplitude x n_phase x n_electrodes x n_windows)</dd>
 </dl>
 </dd>
 </dl>

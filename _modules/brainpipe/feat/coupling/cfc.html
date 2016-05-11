@@ -151,6 +151,7 @@
 <span class="kn">from</span> <span class="nn">psutil</span> <span class="kn">import</span> <span class="n">cpu_count</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">product</span>
+<span class="kn">from</span> <span class="nn">scipy.special</span> <span class="kn">import</span> <span class="n">erfinv</span>
 
 <span class="kn">from</span> <span class="nn">brainpipe.feat.utils._feat</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_manageWindow</span><span class="p">,</span> <span class="n">_manageFrequencies</span><span class="p">,</span>
                                         <span class="n">_checkref</span><span class="p">)</span>
@@ -251,10 +252,10 @@
 
 <span class="sd">                    - &#39;1&#39;: Modulation Index [#f1]_</span>
 <span class="sd">                    - &#39;2&#39;: Kullback-Leibler Distance [#f2]_</span>
-<span class="sd">                    - &#39;3&#39;: Phase synchrony</span>
-<span class="sd">                    - &#39;4&#39;: Amplitude PSD</span>
-<span class="sd">                    - &#39;5&#39;: Heights Ratio</span>
-<span class="sd">                    - &#39;6&#39;: ndPAC [#f3]_</span>
+<span class="sd">                    - &#39;3&#39;: Heights Ratio</span>
+<span class="sd">                    - &#39;4&#39;: Phase synchrony</span>
+<span class="sd">                    - &#39;5&#39;: ndPAC [#f3]_</span>
+<span class="sd">                    - &#39;6&#39;: Amplitude PSD</span>
 
 <span class="sd">                * Second digit: refer to the method for computing surrogates:</span>
 
@@ -321,27 +322,38 @@
 
         <span class="c1"># Initalize pac object :</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">Id</span> <span class="o">=</span> <span class="n">Id</span>
-        <span class="n">pha_kind</span> <span class="o">=</span> <span class="s1">&#39;phase&#39;</span>
-        <span class="n">amp_kind</span> <span class="o">=</span> <span class="s1">&#39;amplitude&#39;</span>
+        <span class="n">me</span> <span class="o">=</span> <span class="n">Id</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c1"># Manage settings :</span>
+        <span class="c1">#   1 - Choose if we extract phase or amplitude :</span>
+        <span class="c1">#       - Methods using phase // amplitude :</span>
+        <span class="k">if</span> <span class="n">me</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">,</span> <span class="s1">&#39;5&#39;</span><span class="p">,</span> <span class="s1">&#39;6&#39;</span><span class="p">]:</span>
+            <span class="n">pha_kind</span><span class="p">,</span> <span class="n">amp_kind</span> <span class="o">=</span> <span class="s1">&#39;phase&#39;</span><span class="p">,</span> <span class="s1">&#39;amplitude&#39;</span>
+        <span class="c1">#       - Methods using phase // phase :</span>
+        <span class="k">elif</span> <span class="n">me</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;4&#39;</span><span class="p">]:</span>
+            <span class="n">pha_kind</span><span class="p">,</span> <span class="n">amp_kind</span> <span class="o">=</span> <span class="s1">&#39;phase&#39;</span><span class="p">,</span> <span class="s1">&#39;phase&#39;</span>
+        <span class="c1">#   2 - Specific case of Ozkurt :</span>
+        <span class="k">if</span> <span class="n">me</span> <span class="o">==</span> <span class="s1">&#39;5&#39;</span><span class="p">:</span>
+            <span class="n">Id</span> <span class="o">=</span> <span class="s1">&#39;500&#39;</span>
+        <span class="c1"># Initialize cfc :</span>
         <span class="n">_coupling</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pha_f</span><span class="p">,</span> <span class="n">pha_kind</span><span class="p">,</span> <span class="n">pha_meth</span><span class="p">,</span> <span class="n">pha_cycle</span><span class="p">,</span>
                            <span class="n">amp_f</span><span class="p">,</span> <span class="n">amp_kind</span><span class="p">,</span> <span class="n">amp_meth</span><span class="p">,</span> <span class="n">amp_cycle</span><span class="p">,</span>
                            <span class="n">sf</span><span class="p">,</span> <span class="n">npts</span><span class="p">,</span> <span class="n">window</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="c1"># Get pac model :</span>
         <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">ModelStr</span><span class="p">,</span> <span class="n">SurStr</span><span class="p">,</span> <span class="n">NormStr</span> <span class="o">=</span> <span class="n">CfcSettings</span><span class="p">(</span><span class="n">Id</span><span class="p">,</span> <span class="n">nbins</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Method : &#39;</span><span class="o">+</span><span class="n">ModelStr</span><span class="p">,</span> <span class="s1">&#39;Surrogates : &#39;</span><span class="o">+</span><span class="n">SurStr</span><span class="p">,</span>
-                       <span class="s1">&#39;Normalization : &#39;</span><span class="o">+</span><span class="n">NormStr</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Method : &#39;</span><span class="o">+</span><span class="n">ModelStr</span><span class="p">,</span> <span class="s1">&#39;Surrogates : &#39;</span><span class="o">+</span><span class="n">SurStr</span><span class="p">,</span>
+                      <span class="s1">&#39;Normalization : &#39;</span><span class="o">+</span><span class="n">NormStr</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_nbins</span> <span class="o">=</span> <span class="n">nbins</span>
 
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">phafilt</span> <span class="o">=</span> <span class="s1">&#39;Phase : &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pha</span><span class="p">)</span>
         <span class="n">ampfilt</span> <span class="o">=</span> <span class="s1">&#39;Amplitude : &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_amp</span><span class="p">)</span>
-        <span class="n">met</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;,</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;,</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;,</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="n">met</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;,</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;,</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;,</span><span class="se">\n</span><span class="s1">&#39;</span>
         <span class="n">cfcStr</span> <span class="o">=</span> <span class="s1">&#39;Crossfrequency Coupling(step=&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_step</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, width=&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_width</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, Id=&#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">Id</span><span class="o">+</span><span class="s1">&#39;, nbins=&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_nbins</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;,</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">+</span><span class="n">met</span>
 
         <span class="k">return</span> <span class="n">cfcStr</span><span class="o">+</span><span class="n">phafilt</span><span class="o">+</span><span class="s1">&#39;,</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">+</span><span class="n">ampfilt</span><span class="o">+</span><span class="s1">&#39;)&#39;</span>
 
-<div class="viewcode-block" id="pac.get"><a class="viewcode-back" href="../../../../feature.html#feature.pac.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xpha</span><span class="p">,</span> <span class="n">xamp</span><span class="p">,</span> <span class="n">n_perm</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+<div class="viewcode-block" id="pac.get"><a class="viewcode-back" href="../../../../feature.html#feature.pac.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xpha</span><span class="p">,</span> <span class="n">xamp</span><span class="p">,</span> <span class="n">n_perm</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get the normalized cfc mesure between an xpha and xamp signals.</span>
 
 <span class="sd">        Args:</span>
@@ -357,6 +369,9 @@
 <span class="sd">            n_perm: integer, optional, [def: 200]</span>
 <span class="sd">                Number of permutations for normalizing the cfc mesure.</span>
 
+<span class="sd">            p: float, optional, [def: 0.05]</span>
+<span class="sd">                p-value for the statistical method of Ozkurt 2012.</span>
+
 <span class="sd">            n_jobs: integer, optional, [def: -1]</span>
 <span class="sd">                Control the number of jobs for parallel computing. Use 1, 2, ..</span>
 <span class="sd">                depending of your number or cores. -1 for all the cores.</span>
@@ -367,11 +382,11 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            ncfc: array</span>
 <span class="sd">                The unormalized cfc mesure of size :</span>
-<span class="sd">                (n_phase x n_amplitude x n_electrodes x n_windows x n_trials)</span>
+<span class="sd">                (n_amplitude x n_phase x n_electrodes x n_windows x n_trials)</span>
 
 <span class="sd">            pvalue: array</span>
 <span class="sd">                The associated p-values of size :</span>
-<span class="sd">                (n_phase x n_amplitude x n_electrodes x n_windows)</span>
+<span class="sd">                (n_amplitude x n_phase x n_electrodes x n_windows)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Check the inputs variables :</span>
         <span class="n">xpha</span><span class="p">,</span> <span class="n">xamp</span> <span class="o">=</span> <span class="n">_cfcCheck</span><span class="p">(</span><span class="n">xpha</span><span class="p">,</span> <span class="n">xamp</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_npts</span><span class="p">)</span>
@@ -396,23 +411,32 @@
         <span class="n">cfcsu</span> <span class="o">=</span> <span class="n">Parallel</span><span class="p">(</span><span class="n">n_jobs</span><span class="o">=</span><span class="n">elecJob</span><span class="p">)(</span><span class="n">delayed</span><span class="p">(</span><span class="n">_cfcFiltSuro</span><span class="p">)(</span>
             <span class="n">xpha</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="n">xamp</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="n">surJob</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">))</span>
         <span class="n">uCfc</span><span class="p">,</span> <span class="n">Suro</span><span class="p">,</span> <span class="n">mSuro</span><span class="p">,</span> <span class="n">stdSuro</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">cfcsu</span><span class="p">)</span>
+        <span class="n">uCfc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">uCfc</span><span class="p">)</span>
 
-        <span class="c1"># Compute permutations :</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_perm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">uCfc</span><span class="p">,</span> <span class="n">Suro</span><span class="p">,</span> <span class="n">mSuro</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">uCfc</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Suro</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">mSuro</span><span class="p">)</span>
-            <span class="n">stdSuro</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">stdSuro</span><span class="p">)</span>
+        <span class="c1"># Permutations ans stat:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">Id</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="s1">&#39;5&#39;</span><span class="p">:</span>
+            <span class="c1"># Compute permutations :</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_perm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">Suro</span><span class="p">,</span> <span class="n">mSuro</span><span class="p">,</span> <span class="n">stdSuro</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Suro</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">mSuro</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">stdSuro</span><span class="p">)</span>
 
-            <span class="c1"># Normalize each cfc:</span>
-            <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">Norm</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">CfcSettings</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Id</span><span class="p">)</span>
-            <span class="n">nCfc</span> <span class="o">=</span> <span class="n">Norm</span><span class="p">(</span><span class="n">uCfc</span><span class="p">,</span> <span class="n">mSuro</span><span class="p">,</span> <span class="n">stdSuro</span><span class="p">)</span>
+                <span class="c1"># Normalize each cfc:</span>
+                <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">Norm</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">CfcSettings</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Id</span><span class="p">)</span>
+                <span class="n">nCfc</span> <span class="o">=</span> <span class="n">Norm</span><span class="p">(</span><span class="n">uCfc</span><span class="p">,</span> <span class="n">mSuro</span><span class="p">,</span> <span class="n">stdSuro</span><span class="p">)</span>
 
-            <span class="c1"># Confidence interval :</span>
-            <span class="n">pvalue</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">_cfcPvalue</span><span class="p">(</span><span class="n">nCfc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="n">Suro</span><span class="p">[</span>
-                <span class="n">k</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">)])</span>
+                <span class="c1"># Confidence interval :</span>
+                <span class="n">pvalue</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">_cfcPvalue</span><span class="p">(</span><span class="n">nCfc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="n">Suro</span><span class="p">[</span>
+                    <span class="n">k</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">)])</span>
 
-            <span class="k">return</span> <span class="n">nCfc</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">pvalue</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">uCfc</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="bp">None</span></div></div>
+                <span class="k">return</span> <span class="n">nCfc</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">pvalue</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">uCfc</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="bp">None</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">Id</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="s1">&#39;5&#39;</span><span class="p">:</span>
+            <span class="c1"># Ozkurt threshold :</span>
+            <span class="n">xlim</span> <span class="o">=</span> <span class="p">(</span><span class="n">erfinv</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">p</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+            <span class="c1"># Set to zero non-significant values:</span>
+            <span class="n">idxUn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">uCfc</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="o">*</span><span class="n">xlim</span><span class="p">)</span>
+            <span class="n">uCfc</span><span class="p">[</span><span class="n">idxUn</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">return</span> <span class="n">uCfc</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="bp">None</span></div></div>
 </pre></div>
 
           </div>
