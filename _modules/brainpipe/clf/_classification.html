@@ -84,7 +84,7 @@
 </ul>
 </li>
 </ul>
-<p class="caption"><span class="caption-text">STATISTIQUES</span></p>
+<p class="caption"><span class="caption-text">STATISTICS</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../stat.html">Statistics</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../stat.html#binomial">Binomial</a></li>
@@ -107,6 +107,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../tools.html">Tools</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../tools.html#bpstudy">Bpstudy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../tools.html#pandas-complements">Pandas complements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tools.html#arrays">Arrays</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../tools.html#file-management">File management</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../tools.html#others">Others</a></li>
 </ul>
@@ -156,14 +157,16 @@
 <span class="kn">from</span> <span class="nn">sklearn.ensemble</span> <span class="kn">import</span> <span class="n">RandomForestClassifier</span>
 <span class="kn">from</span> <span class="nn">sklearn.neighbors</span> <span class="kn">import</span> <span class="n">KNeighborsClassifier</span>
 <span class="kn">from</span> <span class="nn">sklearn.naive_bayes</span> <span class="kn">import</span> <span class="n">GaussianNB</span>
-<span class="kn">from</span> <span class="nn">sklearn.cross_validation</span> <span class="kn">import</span> <span class="p">(</span><span class="n">StratifiedKFold</span><span class="p">,</span> <span class="n">KFold</span><span class="p">,</span>
-                                      <span class="n">StratifiedShuffleSplit</span><span class="p">,</span> <span class="n">ShuffleSplit</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">sklearn.cross_validation</span> <span class="kn">import</span> <span class="p">(</span><span class="n">StratifiedKFold</span><span class="p">,</span> <span class="n">KFold</span><span class="p">,</span> <span class="n">LeaveOneOut</span><span class="p">,</span>
+                                      <span class="n">StratifiedShuffleSplit</span><span class="p">,</span> <span class="n">ShuffleSplit</span><span class="p">,</span>
+                                      <span class="n">LeaveOneLabelOut</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">accuracy_score</span><span class="p">,</span> <span class="n">confusion_matrix</span>
 <span class="kn">from</span> <span class="nn">sklearn.base</span> <span class="kn">import</span> <span class="n">clone</span>
 
 <span class="kn">from</span> <span class="nn">joblib</span> <span class="kn">import</span> <span class="n">Parallel</span><span class="p">,</span> <span class="n">delayed</span>
 
-<span class="kn">from</span> <span class="nn">brainpipe.statistics</span> <span class="kn">import</span> <span class="n">binostatinv</span><span class="p">,</span> <span class="n">perm2pval</span><span class="p">,</span> <span class="n">permIntraClass</span>
+<span class="c1"># from brainpipe.statistics import binostatinv, perm2pval, permIntraClass</span>
+<span class="kn">from</span> <span class="nn">brainpipe.statistics</span> <span class="kn">import</span> <span class="n">bino_da2p</span>
 <span class="kn">from</span> <span class="nn">brainpipe.tools</span> <span class="kn">import</span> <span class="n">groupInList</span><span class="p">,</span> <span class="n">list2index</span>
 <span class="kn">from</span> <span class="nn">brainpipe.sys.tools</span> <span class="kn">import</span> <span class="n">adaptsize</span>
 
@@ -354,8 +357,8 @@
 
 
 <span class="sd">    .. rubric:: Footnotes</span>
-<span class="sd">    .. [#f1] Ojala and Garriga, 2010 `see &lt;http://www.jmlr.org/papers/volume11/ojala10a/ojala10a.pdf&gt;`_</span>
-<span class="sd">    .. [#f2] Combrisson and Jerbi, 2015 `see &lt;http://www.ncbi.nlm.nih.gov/pubmed/25596422/&gt;`_</span>
+<span class="sd">    .. [#f1] `Ojala and Garriga, 2010 &lt;http://www.jmlr.org/papers/volume11/ojala10a/ojala10a.pdf&gt;`_</span>
+<span class="sd">    .. [#f2] `Combrisson and Jerbi, 2015 &lt;http://www.ncbi.nlm.nih.gov/pubmed/25596422/&gt;`_</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Get the current da</span>
@@ -369,7 +372,7 @@
         <span class="c1"># Binomial :</span>
         <span class="c1"># -------------------------------------------------------------</span>
         <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;bino&#39;</span><span class="p">:</span>
-            <span class="n">pvalue</span> <span class="o">=</span> <span class="n">binostatinv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">score</span><span class="p">)</span>
+            <span class="n">pvalue</span> <span class="o">=</span> <span class="n">bino_da2p</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">score</span><span class="p">)</span>
             <span class="n">daPerm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
 
         <span class="c1"># -------------------------------------------------------------</span>
@@ -653,6 +656,8 @@
 <span class="sd">                - &#39;kfold&#39;: k-fold</span>
 <span class="sd">                - &#39;sss&#39;: Stratified Shuffle Split</span>
 <span class="sd">                - &#39;ss&#39;: Shuffle Split</span>
+<span class="sd">                - &#39;loo&#39;: Leave One Out</span>
+<span class="sd">                - &#39;lolo&#39;: Leave One Label Out</span>
 
 <span class="sd">        n_folds: integer, optional, [def: 10]</span>
 <span class="sd">            Number of folds</span>
@@ -720,6 +725,18 @@
         <span class="n">cvT</span><span class="o">.</span><span class="n">lgStr</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">rep</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;-times, test size 1/&#39;</span> <span class="o">+</span> \
             <span class="nb">str</span><span class="p">(</span><span class="n">n_folds</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; Shuffle Stratified&#39;</span>
         <span class="n">cvT</span><span class="o">.</span><span class="n">shStr</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">rep</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; rep x&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">n_folds</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; &#39;</span><span class="o">+</span><span class="n">cvtype</span>
+
+    <span class="c1"># Leave One Out :</span>
+    <span class="k">elif</span> <span class="n">cvtype</span> <span class="o">==</span> <span class="s1">&#39;loo&#39;</span><span class="p">:</span>
+        <span class="n">cvT</span> <span class="o">=</span> <span class="n">LeaveOneOut</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
+        <span class="n">cvT</span><span class="o">.</span><span class="n">lgStr</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">rep</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;-times, Leave One Out&#39;</span>
+        <span class="n">cvT</span><span class="o">.</span><span class="n">shStr</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">rep</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; rep &#39;</span><span class="o">+</span><span class="n">cvtype</span>
+
+    <span class="c1"># Leave One Label Out :</span>
+    <span class="k">elif</span> <span class="n">cvtype</span> <span class="o">==</span> <span class="s1">&#39;lolo&#39;</span><span class="p">:</span>
+        <span class="n">cvT</span> <span class="o">=</span> <span class="n">LeaveOneLabelOut</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+        <span class="n">cvT</span><span class="o">.</span><span class="n">lgStr</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">rep</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;-times, leave One Label Out&#39;</span>
+        <span class="n">cvT</span><span class="o">.</span><span class="n">shStr</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">rep</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; rep &#39;</span><span class="o">+</span><span class="n">cvtype</span>
 
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;No cross-validation &quot;&#39;</span><span class="o">+</span><span class="n">cvtype</span><span class="o">+</span><span class="s1">&#39;&quot;&quot; found&#39;</span><span class="p">)</span>

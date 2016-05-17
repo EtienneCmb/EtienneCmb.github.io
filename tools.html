@@ -84,7 +84,7 @@
 </ul>
 </li>
 </ul>
-<p class="caption"><span class="caption-text">STATISTIQUES</span></p>
+<p class="caption"><span class="caption-text">STATISTICS</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="stat.html">Statistics</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="stat.html#binomial">Binomial</a></li>
@@ -107,6 +107,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Tools</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#bpstudy">Bpstudy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#pandas-complements">Pandas complements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#arrays">Arrays</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#file-management">File management</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#others">Others</a></li>
 </ul>
@@ -367,6 +368,55 @@ removed.</dd>
 </dl>
 </dd></dl>
 
+</dd></dl>
+
+</div>
+<div class="section" id="arrays">
+<h2>Arrays<a class="headerlink" href="#arrays" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="tools.ndsplit">
+<code class="descclassname">tools.</code><code class="descname">ndsplit</code><span class="sig-paren">(</span><em>x</em>, <em>sp</em>, <em>axis=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tools.html#ndsplit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tools.ndsplit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Split array (work for odd dimensions)</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>x: array</dt>
+<dd>Data to split</dd>
+<dt>sp: int</dt>
+<dd>Number of chunk</dd>
+</dl>
+</dd>
+<dt>Kargs:</dt>
+<dd><dl class="first last docutils">
+<dt>axis: int, optional, [def: 0]</dt>
+<dd>Axis for splitting array</dd>
+</dl>
+</dd>
+<dt>Return:</dt>
+<dd>List of splitted arrays</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="tools.ndjoin">
+<code class="descclassname">tools.</code><code class="descname">ndjoin</code><span class="sig-paren">(</span><em>x</em>, <em>axis=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tools.html#ndjoin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tools.ndjoin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Join arrays in a list</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>x: list</dt>
+<dd>List of data.</dd>
+</dl>
+</dd>
+<dt>Kargs:</dt>
+<dd><dl class="first last docutils">
+<dt>axis: optional, [def: 0]</dt>
+<dd>Axis to join arrays</dd>
+</dl>
+</dd>
+<dt>Return:</dt>
+<dd>Array</dd>
+</dl>
 </dd></dl>
 
 </div>

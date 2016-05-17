@@ -85,7 +85,7 @@
 </ul>
 </li>
 </ul>
-<p class="caption"><span class="caption-text">STATISTIQUES</span></p>
+<p class="caption"><span class="caption-text">STATISTICS</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="stat.html">Statistics</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="stat.html#binomial">Binomial</a></li>
@@ -108,6 +108,7 @@
 <li class="toctree-l1"><a class="reference internal" href="tools.html">Tools</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="tools.html#bpstudy">Bpstudy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tools.html#pandas-complements">Pandas complements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.html#arrays">Arrays</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tools.html#file-management">File management</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tools.html#others">Others</a></li>
 </ul>
@@ -161,7 +162,7 @@
 <span id="borderplt"></span><h2>Border plot<a class="headerlink" href="#border-plot" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt>
-<em class="property">class </em><code class="descclassname">visual.</code><code class="descname">BorderPlot</code><span class="sig-paren">(</span><em>time</em>, <em>x</em>, <em>y=array([]</em>, <em>dtype=float64)</em>, <em>kind='sem'</em>, <em>color=''</em>, <em>alpha=0.2</em>, <em>linewidth=2</em>, <em>legend=''</em>, <em>ncol=1</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brainpipe/visu/cmon_plt.html#BorderPlot"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">class </em><code class="descclassname">visual.</code><code class="descname">BorderPlot</code><span class="sig-paren">(</span><em>time</em>, <em>x</em>, <em>y=None</em>, <em>kind='sem'</em>, <em>color=''</em>, <em>alpha=0.2</em>, <em>linewidth=2</em>, <em>legend=''</em>, <em>ncol=1</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brainpipe/visu/cmon_plt.html#BorderPlot"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Plot a signal with it associated deviation. The function plot the
 mean of the signal, and the deviation (std) or standard error on the mean
 (sem) in transparency.</p>
@@ -178,7 +179,7 @@ For example, x.shape = (N, M)</dd>
 </dd>
 <dt>Kargs:</dt>
 <dd><dl class="first last docutils">
-<dt>y: numpy array, optional, [def: np.array([])]</dt>
+<dt>y: numpy array, optional, [def: None]</dt>
 <dd>Label vector to separate the x signal in diffrent classes. The
 length of y must be M. If no y is specified, the deviation will be
 computed for the entire array x. If y is composed with integers
@@ -200,38 +201,18 @@ same as the length of unique classes in y.</dd>
 of legend must be the same as the length of unique classes in y.</dd>
 <dt>ncol: integer, optional, [def: 1]</dt>
 <dd>Number of colums for the legend</dd>
+<dt>kwargs:</dt>
+<dd>Supplementar arguments to control each suplot:
+title, xlabel, ylabel (which can be list for each subplot)
+xlim, ylim, xticks, yticks, xticklabels, yticklabels, style.</dd>
 </dl>
 </dd>
 <dt>Return:</dt>
 <dd>The axes of the plot.</dd>
-<dt><a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs:</dt>
-<dd><dl class="first last docutils">
-<dt>title:</dt>
-<dd>title of plot [def: &#8216;&#8217;]</dd>
-<dt>xlabel:</dt>
-<dd>label of x-axis [def: &#8216;&#8217;]</dd>
-<dt>ylabel:</dt>
-<dd>label of y-axis [def: &#8216;&#8217;]</dd>
-<dt>xlim:</dt>
-<dd>limit of the x-axis [def: [], current limit of x]</dd>
-<dt>ylim:</dt>
-<dd>limit of the y-axis [def: [], current limit of y]</dd>
-<dt>xticks:</dt>
-<dd>ticks of x-axis [def: [], current x-ticks]</dd>
-<dt>yticks:</dt>
-<dd>ticks of y-axis [def: [], current y-ticks]</dd>
-<dt>xticklabels:</dt>
-<dd>label of the x-ticks [def: [], current x-ticklabels]</dd>
-<dt>yticklabels:</dt>
-<dd>label of the y-ticks [def: [], current y-ticklabels]</dd>
-<dt>style:</dt>
-<dd>style of the plot [def: None]</dd>
-</dl>
-</dd>
 </dl>
 </dd></dl>
 
-<div class="figure align-center" id="id8">
+<div class="figure align-center" id="id2">
 <img alt="_images/borderplot.png" src="_images/borderplot.png" />
 <p class="caption"><span class="caption-text">Border plot example</span></p>
 </div>
@@ -285,20 +266,20 @@ hShape list must be the same as the length of hLines</dd>
 </dl>
 </dd></dl>
 
-<div class="figure align-center" id="id9">
+<div class="figure align-center" id="id3">
 <img alt="_images/lines.png" src="_images/lines.png" />
 <p class="caption"><span class="caption-text">Quickly add some lines to your plot</span></p>
 </div>
 </div>
 <div class="section" id="tilerplot">
-<span id="id3"></span><h2>tilerplot<a class="headerlink" href="#tilerplot" title="Permalink to this headline">¶</a></h2>
+<span id="id1"></span><h2>tilerplot<a class="headerlink" href="#tilerplot" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt>
 <em class="property">class </em><code class="descclassname">visual.</code><code class="descname">tilerplot</code><a class="reference internal" href="_modules/brainpipe/visu/cmon_plt.html#tilerplot"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Automatic tiler plot for 1, 2 and 3D data.</p>
 <dl class="method">
 <dt>
-<code class="descname">plot1D</code><span class="sig-paren">(</span><em>fig</em>, <em>y</em>, <em>x=None</em>, <em>maxplot=10</em>, <em>figtitle=''</em>, <em>subdim=None</em>, <em>transpose=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brainpipe/visu/cmon_plt.html#tilerplot.plot1D"><span class="viewcode-link">[source]</span></a></dt>
+<code class="descname">plot1D</code><span class="sig-paren">(</span><em>fig</em>, <em>y</em>, <em>x=None</em>, <em>maxplot=10</em>, <em>figtitle=''</em>, <em>subdim=None</em>, <em>transpose=False</em>, <em>color='b'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brainpipe/visu/cmon_plt.html#tilerplot.plot1D"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Simple one dimentional plot</p>
 <dl class="docutils">
 <dt>Args:</dt>
@@ -324,7 +305,9 @@ By default, maxplot is 10 which mean that only 10 subplot can be
 defined.</dd>
 <dt>transpose: bool, optional, [def: False]</dt>
 <dd>Invert subplot (row &lt;-&gt; column)</dd>
-<dt><a href="#id4"><span class="problematic" id="id5">**</span></a>kwargs:</dt>
+<dt>color: string, optional, [def: &#8216;b&#8217;]</dt>
+<dd>Color of the plot</dd>
+<dt>kwargs:</dt>
 <dd>Supplementar arguments to control each suplot:
 title, xlabel, ylabel (which can be list for each subplot)
 xlim, ylim, xticks, yticks, xticklabels, yticklabels, style.</dd>
@@ -377,7 +360,7 @@ By default, maxplot is 10 which mean that only 10 subplot can be
 defined.</dd>
 <dt>transpose: bool, optional, [def: False]</dt>
 <dd>Invert subplot (row &lt;-&gt; column)</dd>
-<dt><a href="#id6"><span class="problematic" id="id7">**</span></a>kwargs:</dt>
+<dt>kwargs:</dt>
 <dd>Supplementar arguments to control each suplot:
 title, xlabel, ylabel (which can be list for each subplot)
 xlim, ylim, xticks, yticks, xticklabels, yticklabels, style.</dd>
@@ -386,9 +369,14 @@ xlim, ylim, xticks, yticks, xticklabels, yticklabels, style.</dd>
 </dl>
 </dd></dl>
 
+<dl class="method">
+<dt>
+<code class="descname">plotcustom</code><span class="sig-paren">(</span><em>fig</em>, <em>y</em>, <em>fcn</em>, <em>maxplot=10</em>, <em>subdim=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brainpipe/visu/cmon_plt.html#tilerplot.plotcustom"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
-<div class="figure align-center" id="id10">
+<div class="figure align-center" id="id4">
 <img alt="_images/plot2D.png" src="_images/plot2D.png" />
 <p class="caption"><span class="caption-text">Automatic 1D and 2D plot</span></p>
 </div>

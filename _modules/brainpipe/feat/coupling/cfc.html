@@ -84,7 +84,7 @@
 </ul>
 </li>
 </ul>
-<p class="caption"><span class="caption-text">STATISTIQUES</span></p>
+<p class="caption"><span class="caption-text">STATISTICS</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../stat.html">Statistics</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../stat.html#binomial">Binomial</a></li>
@@ -107,6 +107,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../tools.html">Tools</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../tools.html#bpstudy">Bpstudy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../tools.html#pandas-complements">Pandas complements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tools.html#arrays">Arrays</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../tools.html#file-management">File management</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../tools.html#others">Others</a></li>
 </ul>
@@ -184,9 +185,9 @@
 <span class="n">Footnotes</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="s2">    .. rubric:: Footnotes</span>
-<span class="s2">    .. [#f1] Canolty et al, 2006 `see &lt;http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2628289/&gt;`_</span>
-<span class="s2">    .. [#f2] Tort et al, 2010 `see &lt;http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2941206/&gt;`_</span>
-<span class="s2">    .. [#f3] See Ozkurt et al, 2012 `see &lt;http://www.ncbi.nlm.nih.gov/pubmed/22531738/&gt;`_</span>
+<span class="s2">    .. [#f1] `Canolty et al, 2006 &lt;http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2628289/&gt;`_</span>
+<span class="s2">    .. [#f2] `Tort et al, 2010 &lt;http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2941206/&gt;`_</span>
+<span class="s2">    .. [#f3] `Ozkurt et al, 2012 &lt;http://www.ncbi.nlm.nih.gov/pubmed/22531738/&gt;`_</span>
 
 <span class="s2">&quot;&quot;&quot;</span>
 
@@ -234,7 +235,7 @@
 <span class="sd">        - Surrogates to correct the true pac value</span>
 <span class="sd">        - A normalization method to correct true pas value bu surrogates</span>
 
-<span class="sd">    Contributor: Juan LP Soto  `Python &lt;http://www.python.org/&gt;`_.</span>
+<span class="sd">    Contributor: Juan LP Soto.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        sf: int</span>
@@ -283,20 +284,20 @@
 <span class="sd">                List containing the couple of frequency bands for the phase.</span>
 <span class="sd">                Example: f=[ [2,4], [5,7], [60,250] ]</span>
 
-<span class="sd">        pha_meth: string, optional, [def : &#39;hilbert&#39;]</span>
+<span class="sd">        pha_meth: string, optional, [def: &#39;hilbert&#39;]</span>
 <span class="sd">            Method for the phase extraction.</span>
 
-<span class="sd">        pha_cycle: integer, optional, [def : 3]</span>
+<span class="sd">        pha_cycle: integer, optional, [def: 3]</span>
 <span class="sd">            Number of cycles for filtering the phase.</span>
 
-<span class="sd">        amp_f: tuple/list, optional, [def : [60,200]]</span>
+<span class="sd">        amp_f: tuple/list, optional, [def: [60,200]]</span>
 <span class="sd">                List containing the couple of frequency bands for the amplitude.</span>
 <span class="sd">                Each couple can be either a list or a tuple.</span>
 
-<span class="sd">        amp_meth: string, optional, [def : &#39;hilbert&#39;]</span>
+<span class="sd">        amp_meth: string, optional, [def: &#39;hilbert&#39;]</span>
 <span class="sd">            Method for the amplitude extraction.</span>
 
-<span class="sd">        amp_cycle: integer, optional, [def : 6]</span>
+<span class="sd">        amp_cycle: integer, optional, [def: 6]</span>
 <span class="sd">            Number of cycles for filtering the amplitude.</span>
 
 <span class="sd">        nbins: integer, optional, [def: 18]</span>

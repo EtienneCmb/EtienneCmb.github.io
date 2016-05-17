@@ -84,7 +84,7 @@
 </ul>
 </li>
 </ul>
-<p class="caption"><span class="caption-text">STATISTIQUES</span></p>
+<p class="caption"><span class="caption-text">STATISTICS</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../stat.html">Statistics</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../stat.html#binomial">Binomial</a></li>
@@ -107,6 +107,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../tools.html">Tools</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../tools.html#bpstudy">Bpstudy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../tools.html#pandas-complements">Pandas complements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tools.html#arrays">Arrays</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../tools.html#file-management">File management</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../tools.html#others">Others</a></li>
 </ul>
@@ -152,10 +153,14 @@
 <span class="kn">from</span> <span class="nn">brainpipe.feat.utils._feat</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_manageWindow</span><span class="p">,</span> <span class="n">_manageFrequencies</span><span class="p">,</span>
                                         <span class="n">normalize</span><span class="p">,</span> <span class="n">_checkref</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">brainpipe.visu.cmon_plt</span> <span class="kn">import</span> <span class="n">tilerplot</span>
+<span class="kn">from</span> <span class="nn">brainpipe.statistics</span> <span class="kn">import</span> <span class="n">perm_swap</span><span class="p">,</span> <span class="n">perm_metric</span><span class="p">,</span> <span class="n">perm_2pvalue</span><span class="p">,</span> <span class="n">maxstat</span>
+
+<span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">wilcoxon</span><span class="p">,</span> <span class="n">kruskal</span>
 
 <span class="kn">from</span> <span class="nn">joblib</span> <span class="kn">import</span> <span class="n">Parallel</span><span class="p">,</span> <span class="n">delayed</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">product</span>
+<span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;sigfilt&#39;</span><span class="p">,</span> <span class="s1">&#39;amplitude&#39;</span><span class="p">,</span> <span class="s1">&#39;power&#39;</span><span class="p">,</span> <span class="s1">&#39;TF&#39;</span><span class="p">,</span> <span class="s1">&#39;phase&#39;</span><span class="p">]</span>
 
@@ -163,7 +168,7 @@
 <span class="c1"># ------------------------------------------------------------</span>
 <span class="c1"># DOCUMENTATION</span>
 <span class="c1"># ------------------------------------------------------------</span>
-<span class="n">docsignal</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;norm: int, optional [def: 0]</span>
+<span class="n">docsignal</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;norm: int, optional [def: None]</span>
 <span class="s2">            Number to choose the normalization method</span>
 <span class="s2">                - 0: No normalisation</span>
 <span class="s2">                - 1: Substraction</span>
@@ -171,7 +176,7 @@
 <span class="s2">                - 3: Substract then divide</span>
 <span class="s2">                - 4: Z-score</span>
 
-<span class="s2">        baseline: tuple/list of int [def: (1,1)]</span>
+<span class="s2">        baseline: tuple/list of int [def: None]</span>
 <span class="s2">            Define a window to normalize the power</span>
 
 <span class="s2">        split: int or list of int, optional [def: None]</span>
@@ -260,93 +265,202 @@
                                <span class="n">wi</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_width</span><span class="p">,</span> <span class="n">sp</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_split</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">powStr</span><span class="o">+</span><span class="n">extractStr</span><span class="o">+</span><span class="s1">&#39;)&#39;</span>
 
-    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">statmeth</span><span class="o">=</span><span class="s1">&#39;permutation&#39;</span><span class="p">,</span> <span class="n">twotails</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">maxstat</span><span class="o">=-</span><span class="mi">2</span><span class="p">,</span>
-            <span class="n">n_perm</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">statmeth</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">tail</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">n_perm</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s1">&#39;m_center&#39;</span><span class="p">,</span>
+            <span class="n">maxistat</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get the spectral informations of the signal x.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            x: array</span>
-<span class="sd">                Data. x should have a shape of</span>
-<span class="sd">                (n_electrodes x n_pts x n_trials)</span>
+<span class="sd">                Data with a shape of (n_electrodes x n_pts x n_trials)</span>
 
 <span class="sd">        Kargs:</span>
-<span class="sd">            n_perm: integer, optional, [def: 200]</span>
-<span class="sd">                Number of permutations for assessing statistical significiancy.</span>
+<span class="sd">            statmeth: string, optional, [def: None]</span>
+<span class="sd">                Method to evaluate the statistical significiancy. To get p-values,</span>
+<span class="sd">                the program will compare real values with a defined baseline. As a</span>
+<span class="sd">                consequence, the &#39;norm&#39; and &#39;baseline&#39; parameter should not be None.</span>
 
-<span class="sd">        statmeth: string, optional, [def: &#39;none&#39;]</span>
-<span class="sd">            Method to evaluate the statistical significiancy. To get p-values,</span>
-<span class="sd">            the program will compare real values with a defined baseline. As a</span>
-<span class="sd">            consequence, the &#39;norm&#39; parameter should not be equal to zero.</span>
-
-<span class="sd">                - &#39;none&#39;: no statistical evaluation</span>
 <span class="sd">                - &#39;permutation&#39;: randomly shuffle real data with baseline.Control the number of permutations with the n_perm parameter. For example, if n_perm = 1000, this mean that minimum p-valueswill be 0.001.</span>
 <span class="sd">                - &#39;wilcoxon&#39;: Wilcoxon signed-rank test</span>
 <span class="sd">                - &#39;kruskal&#39;: Kruskal-Wallis H-test</span>
 
-<span class="sd">        twotails: bool, optional, [def: False]</span>
-<span class="sd">            For the permutation method, get p-values from the two tails of the</span>
-<span class="sd">            distribution.</span>
+<span class="sd">            n_perm: integer, optional, [def: 200]</span>
+<span class="sd">                Number of permutations for assessing statistical significiancy.</span>
 
-<span class="sd">        maxtstat: integer, optional, [def -2]</span>
-<span class="sd">            Correct p-values with maximum statistique. maxstat correspond to</span>
-<span class="sd">            the dimension of perm for correction. Use -1 to correct through all</span>
-<span class="sd">            dimensions. Otherwise, use d1, d2, ... or dn to correct through a</span>
-<span class="sd">            specific dimension. If maxstat is -2, not correction is applied.</span>
+<span class="sd">            tail: int, optional, [def: 2]</span>
+<span class="sd">                For the permutation method, get p-values from one or two tails of</span>
+<span class="sd">                the distribution. Use -1 for testing A&lt;B, 1 for A&gt;B and 2 for A~=B.</span>
 
-<span class="sd">        n_perm: integer, optional, [def: 200]</span>
-<span class="sd">            Number of permutations for assessing statistical significiancy.</span>
+<span class="sd">            metric: string/function type, optional, [def: &#39;m_center&#39;]</span>
+<span class="sd">                Use diffrent metrics to normalize data and permutations by the</span>
+<span class="sd">                defined baseline. Use:</span>
+
+<span class="sd">                - None: compare directly values without transformation</span>
+<span class="sd">                - &#39;m_center&#39;: (A-B)/mean(B) transformation</span>
+<span class="sd">                - &#39;m_zscore&#39;: (A-B)/std(B) transformation</span>
+<span class="sd">                - &#39;m_minus&#39;: (A-B) transformation</span>
+<span class="sd">                - function: user defined function [def myfcn(A, B): return array_like]</span>
+
+<span class="sd">            maxistat: bool, optional, [def: False]</span>
+<span class="sd">                Correct p-values with maximum statistique. If maxistat is True,</span>
+<span class="sd">                the correction will be applied only trhough frequencies.</span>
 
 <span class="sd">        Return:</span>
 <span class="sd">            xF: array</span>
 <span class="sd">                The un/normalized feature of x, with a shape of</span>
 <span class="sd">                (n_frequency x n_electrodes x n_window x n_trials)</span>
+
+<span class="sd">            pvalues: array</span>
+<span class="sd">                p-values with a shape of (n_frequency x n_electrodes x n_window)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Get variables :</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_statmeth</span> <span class="o">=</span> <span class="n">statmeth</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_n_perm</span> <span class="o">=</span> <span class="n">n_perm</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_2t</span> <span class="o">=</span> <span class="n">twotails</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_mxst</span> <span class="o">=</span> <span class="n">maxstat</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_2t</span> <span class="o">=</span> <span class="n">tail</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mxst</span> <span class="o">=</span> <span class="n">maxistat</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_metric</span> <span class="o">=</span> <span class="n">metric</span>
+
         <span class="c1"># Check input size :</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
             <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_npts</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The second dimension must be &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_npts</span><span class="p">))</span>
         <span class="n">nfeat</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">warnmsg</span> <span class="o">=</span> <span class="s1">&#39;You define a normalization but no baseline has been&#39;</span> <span class="o">+</span> \
+                  <span class="s1">&#39; specified. Normalization will be ignore&#39;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_norm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_baseline</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">):</span>
+            <span class="n">warn</span><span class="p">(</span><span class="n">warnmsg</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_norm</span> <span class="o">=</span> <span class="bp">None</span>
+
         <span class="c1"># Check statistical method :</span>
-        <span class="n">_checkref</span><span class="p">(</span><span class="s1">&#39;statmeth&#39;</span><span class="p">,</span> <span class="n">statmeth</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;permutation&#39;</span><span class="p">,</span> <span class="s1">&#39;wilcoxon&#39;</span><span class="p">,</span> <span class="s1">&#39;kruskal&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">statmeth</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">_checkref</span><span class="p">(</span><span class="s1">&#39;statmeth&#39;</span><span class="p">,</span> <span class="n">statmeth</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;permutation&#39;</span><span class="p">,</span> <span class="s1">&#39;wilcoxon&#39;</span><span class="p">,</span> <span class="s1">&#39;kruskal&#39;</span><span class="p">])</span>
+
         <span class="c1"># run feature computation:</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">Parallel</span><span class="p">(</span><span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">)(</span>
             <span class="n">delayed</span><span class="p">(</span><span class="n">_get</span><span class="p">)(</span><span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="bp">self</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nfeat</span><span class="p">))</span>
-        <span class="c1"># xF, pvalues = zip(*data)</span>
+        <span class="n">xF</span><span class="p">,</span> <span class="n">pvalues</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">data</span><span class="p">)</span>
+
         <span class="c1"># Re-organize data :</span>
-        <span class="n">xF</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">xF</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">xF</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">pvalues</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">pvalues</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pvalues</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">pvalues</span> <span class="o">=</span> <span class="bp">None</span>
+
         <span class="c1"># Remove last dimension (for TF):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meanT</span><span class="p">:</span>
             <span class="n">xF</span> <span class="o">=</span> <span class="n">xF</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
 
-        <span class="k">return</span> <span class="n">xF</span>  <span class="c1"># , np.swapaxes(np.array(pvalues), 0, 1)</span>
+        <span class="k">return</span> <span class="n">xF</span><span class="p">,</span> <span class="n">pvalues</span>
 
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">freqvec</span><span class="p">(</span><span class="n">fstart</span><span class="p">,</span> <span class="n">fend</span><span class="p">,</span> <span class="n">fwidth</span><span class="p">,</span> <span class="n">fstep</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Define a frequency vector</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            fstart: int</span>
-<span class="sd">                Starting frequency</span>
+<span class="c1"># ------------------------------------------------------------</span>
+<span class="c1"># SUB GET FUNCTION</span>
+<span class="c1"># ------------------------------------------------------------</span>
+<span class="k">def</span> <span class="nf">_get</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Sub get function.</span>
 
-<span class="sd">            fend: int</span>
-<span class="sd">                Ending frequency</span>
+<span class="sd">    Get the spectral info of x.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Unpack args :</span>
+    <span class="n">bsl</span><span class="p">,</span> <span class="n">norm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_baseline</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_norm</span>
+    <span class="n">n_perm</span><span class="p">,</span> <span class="n">statmeth</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_perm</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_statmeth</span>
 
-<span class="sd">            fwidth: int</span>
-<span class="sd">                Width for each band</span>
+    <span class="c1"># Get the filter properties and apply:</span>
+    <span class="n">fMeth</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fobj</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sf</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fSplit</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_npts</span><span class="p">)</span>
+    <span class="n">xF</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fobj</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">fMeth</span><span class="p">)</span>
+    <span class="n">nf</span><span class="p">,</span> <span class="n">npts</span><span class="p">,</span> <span class="n">nt</span> <span class="o">=</span> <span class="n">xF</span><span class="o">.</span><span class="n">shape</span>
 
-<span class="sd">            fstep: int</span>
-<span class="sd">                Step between bands</span>
+    <span class="c1"># Statistical evaluation :</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">n_perm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">bsl</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">statmeth</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">):</span>
+        <span class="n">pvalues</span> <span class="o">=</span> <span class="n">_evalstat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xF</span><span class="p">,</span> <span class="n">bsl</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">pvalues</span> <span class="o">=</span> <span class="bp">None</span>
 
-<span class="sd">        Return:</span>
-<span class="sd">            List of frequency couple</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">binarize</span><span class="p">(</span><span class="n">fstart</span><span class="p">,</span> <span class="n">fend</span><span class="p">,</span> <span class="n">fwidth</span><span class="p">,</span> <span class="n">fstep</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;list&#39;</span><span class="p">)</span>
+    <span class="c1"># Mean through trials:</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meanT</span><span class="p">:</span>
+        <span class="n">xF</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">xF</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">],</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="c1"># Normalize power :</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">norm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">bsl</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">):</span>
+        <span class="n">xFm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">xF</span><span class="p">[:,</span> <span class="n">bsl</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="n">bsl</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">:],</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">baseline</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">xFm</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">xF</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="n">xF</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">xF</span><span class="p">,</span> <span class="n">baseline</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">)</span>
+
+    <span class="c1"># Mean Frequencies :</span>
+    <span class="n">xF</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">binArray</span><span class="p">(</span><span class="n">xF</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fSplitIndex</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># Mean time :</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_window</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">xF</span><span class="p">,</span> <span class="n">xvec</span> <span class="o">=</span> <span class="n">binArray</span><span class="p">(</span><span class="n">xF</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_window</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">xF</span><span class="p">,</span> <span class="n">pvalues</span>
+
+
+<span class="k">def</span> <span class="nf">_evalstat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">bsl</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Statistical evaluation of features</span>
+
+<span class="sd">    [x] = [xn] = (nFce, npts, nTrials)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Unpack variables:</span>
+    <span class="n">statmeth</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_statmeth</span>
+    <span class="n">n_perm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_perm</span>
+    <span class="n">tail</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_2t</span>
+    <span class="n">maxst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mxst</span>
+
+    <span class="c1"># Mean Frequencies :</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">binArray</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fSplitIndex</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># Get the baseline and set to same shape of x:</span>
+    <span class="n">xFm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">x</span><span class="p">[:,</span> <span class="n">bsl</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="n">bsl</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">:],</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># Mean time :</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_window</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">binArray</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_window</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># Repeat baseline:</span>
+    <span class="n">baseline</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">xFm</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">1</span><span class="p">])</span>
+
+    <span class="c1"># Get shape of x:</span>
+    <span class="n">nf</span><span class="p">,</span> <span class="n">npts</span><span class="p">,</span> <span class="n">nt</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">pvalues</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">nf</span><span class="p">,</span> <span class="n">npts</span><span class="p">))</span>
+
+    <span class="c1"># Switch between methods:</span>
+    <span class="c1">#   -&gt; Permutations</span>
+    <span class="c1"># Loops on time and matrix for frequency (avoid RAM usage but increase speed)</span>
+    <span class="k">if</span> <span class="n">statmeth</span> <span class="o">==</span> <span class="s1">&#39;permutation&#39;</span><span class="p">:</span>
+        <span class="c1"># Get metric:</span>
+        <span class="n">fcn</span> <span class="o">=</span> <span class="n">perm_metric</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_metric</span><span class="p">)</span>
+        <span class="c1"># Apply metric to x and baseline:</span>
+        <span class="n">xN</span> <span class="o">=</span> <span class="n">fcn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">baseline</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="c1"># For each time points:</span>
+        <span class="k">for</span> <span class="n">pts</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">npts</span><span class="p">):</span>
+            <span class="c1"># Randomly swap x // baseline :</span>
+            <span class="n">perm</span> <span class="o">=</span> <span class="n">perm_swap</span><span class="p">(</span><span class="n">x</span><span class="p">[:,</span> <span class="n">pts</span><span class="p">,</span> <span class="p">:],</span> <span class="n">baseline</span><span class="p">[:,</span> <span class="n">pts</span><span class="p">,</span> <span class="p">:],</span>
+                             <span class="n">n_perm</span><span class="o">=</span><span class="n">n_perm</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">rndstate</span><span class="o">=</span><span class="mi">0</span><span class="o">+</span><span class="n">pts</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="c1"># Normalize permutations by baline:</span>
+            <span class="n">perm</span> <span class="o">=</span> <span class="n">fcn</span><span class="p">(</span><span class="n">perm</span><span class="p">,</span> <span class="n">baseline</span><span class="p">[:,</span> <span class="n">pts</span><span class="p">,</span> <span class="p">:])</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+            <span class="c1"># Maximum stat (correct through frequencies):</span>
+            <span class="k">if</span> <span class="n">maxst</span><span class="p">:</span>
+                <span class="k">print</span><span class="p">(</span><span class="n">perm</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+                <span class="n">perm</span> <span class="o">=</span> <span class="n">maxstat</span><span class="p">(</span><span class="n">perm</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="c1"># Get pvalues :</span>
+            <span class="n">pvalues</span><span class="p">[:,</span> <span class="n">pts</span><span class="p">]</span> <span class="o">=</span> <span class="n">perm_2pvalue</span><span class="p">(</span><span class="n">xN</span><span class="p">[:,</span> <span class="n">pts</span><span class="p">],</span> <span class="n">perm</span><span class="p">,</span> <span class="n">n_perm</span><span class="p">,</span> <span class="n">tail</span><span class="o">=</span><span class="n">tail</span><span class="p">)</span>
+
+    <span class="c1">#   -&gt; Wilcoxon // Kruskal-Wallis:</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Get the method:</span>
+        <span class="k">if</span> <span class="n">statmeth</span> <span class="o">==</span> <span class="s1">&#39;wilcoxon&#39;</span><span class="p">:</span>
+            <span class="k">def</span> <span class="nf">fcn</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span> <span class="k">return</span> <span class="n">wilcoxon</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">statmeth</span> <span class="o">==</span> <span class="s1">&#39;kruskal&#39;</span><span class="p">:</span>
+            <span class="k">def</span> <span class="nf">fcn</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span> <span class="k">return</span> <span class="n">kruskal</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1"># Apply:</span>
+        <span class="n">ite</span> <span class="o">=</span> <span class="n">product</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">nf</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="n">npts</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ite</span><span class="p">:</span>
+            <span class="n">pvalues</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">fcn</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="p">:],</span> <span class="n">xFm</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="p">:])</span>
+
+    <span class="k">return</span> <span class="n">pvalues</span>
 
 
 <span class="c1"># ------------------------------------------------------------</span>
@@ -357,7 +471,7 @@
     <span class="sd">&quot;&quot;&quot;Extract the filtered signal. &quot;&quot;&quot;</span>
     <span class="n">__doc__</span> <span class="o">+=</span> <span class="n">_spectral</span><span class="o">.</span><span class="n">__doc__</span> <span class="o">+</span> <span class="n">docsignal</span> <span class="o">+</span> <span class="n">supfilter</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sf</span><span class="p">,</span> <span class="n">npts</span><span class="p">,</span> <span class="n">f</span><span class="o">=</span><span class="p">[</span><span class="mi">60</span><span class="p">,</span> <span class="mi">200</span><span class="p">],</span> <span class="n">baseline</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">norm</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sf</span><span class="p">,</span> <span class="n">npts</span><span class="p">,</span> <span class="n">f</span><span class="o">=</span><span class="p">[</span><span class="mi">60</span><span class="p">,</span> <span class="mi">200</span><span class="p">],</span> <span class="n">baseline</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
                  <span class="n">window</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
                  <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">_spectral</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sf</span><span class="p">,</span> <span class="n">npts</span><span class="p">,</span> <span class="s1">&#39;signal&#39;</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">baseline</span><span class="p">,</span> <span class="n">norm</span><span class="p">,</span>
@@ -381,7 +495,7 @@
 <span class="s2">            - &#39;wavelet&#39;: wavelet transform</span>
 <span class="s2">    &quot;&quot;&quot;</span> <span class="o">+</span> <span class="n">supfilter</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sf</span><span class="p">,</span> <span class="n">npts</span><span class="p">,</span> <span class="n">f</span><span class="o">=</span><span class="p">[</span><span class="mi">60</span><span class="p">,</span> <span class="mi">200</span><span class="p">],</span> <span class="n">baseline</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">norm</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sf</span><span class="p">,</span> <span class="n">npts</span><span class="p">,</span> <span class="n">f</span><span class="o">=</span><span class="p">[</span><span class="mi">60</span><span class="p">,</span> <span class="mi">200</span><span class="p">],</span> <span class="n">baseline</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
                  <span class="n">method</span><span class="o">=</span><span class="s1">&#39;hilbert1&#39;</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
                  <span class="n">split</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">_checkref</span><span class="p">(</span><span class="s1">&#39;method&#39;</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;hilbert&#39;</span><span class="p">,</span> <span class="s1">&#39;hilbert1&#39;</span><span class="p">,</span> <span class="s1">&#39;hilbert2&#39;</span><span class="p">,</span>
@@ -407,7 +521,7 @@
 <span class="s2">            - &#39;wavelet&#39;: wavelet transform</span>
 <span class="s2">    &quot;&quot;&quot;</span> <span class="o">+</span> <span class="n">supfilter</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sf</span><span class="p">,</span> <span class="n">npts</span><span class="p">,</span> <span class="n">f</span><span class="o">=</span><span class="p">[</span><span class="mi">60</span><span class="p">,</span> <span class="mi">200</span><span class="p">],</span> <span class="n">baseline</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">norm</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sf</span><span class="p">,</span> <span class="n">npts</span><span class="p">,</span> <span class="n">f</span><span class="o">=</span><span class="p">[</span><span class="mi">60</span><span class="p">,</span> <span class="mi">200</span><span class="p">],</span> <span class="n">baseline</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
                  <span class="n">method</span><span class="o">=</span><span class="s1">&#39;hilbert1&#39;</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
                  <span class="n">split</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">_checkref</span><span class="p">(</span><span class="s1">&#39;method&#39;</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;hilbert&#39;</span><span class="p">,</span> <span class="s1">&#39;hilbert1&#39;</span><span class="p">,</span> <span class="s1">&#39;hilbert2&#39;</span><span class="p">,</span>
@@ -433,7 +547,7 @@
 <span class="s2">            - &#39;wavelet&#39;: wavelet transform</span>
 <span class="s2">    &quot;&quot;&quot;</span> <span class="o">+</span> <span class="n">supfilter</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sf</span><span class="p">,</span> <span class="n">npts</span><span class="p">,</span> <span class="n">f</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">baseline</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">norm</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sf</span><span class="p">,</span> <span class="n">npts</span><span class="p">,</span> <span class="n">f</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">baseline</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
                  <span class="n">method</span><span class="o">=</span><span class="s1">&#39;hilbert1&#39;</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
                  <span class="n">time</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">_checkref</span><span class="p">(</span><span class="s1">&#39;method&#39;</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;hilbert&#39;</span><span class="p">,</span> <span class="s1">&#39;hilbert1&#39;</span><span class="p">,</span> <span class="s1">&#39;hilbert2&#39;</span><span class="p">,</span>
@@ -460,114 +574,10 @@
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sf</span><span class="p">,</span> <span class="n">npts</span><span class="p">,</span> <span class="n">f</span><span class="o">=</span><span class="p">[</span><span class="mi">60</span><span class="p">,</span> <span class="mi">200</span><span class="p">],</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;hilbert&#39;</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
                  <span class="n">width</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">_checkref</span><span class="p">(</span><span class="s1">&#39;method&#39;</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;hilbert&#39;</span><span class="p">,</span> <span class="s1">&#39;hilbert1&#39;</span><span class="p">,</span> <span class="s1">&#39;hilbert2&#39;</span><span class="p">])</span>
-        <span class="n">_spectral</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sf</span><span class="p">,</span> <span class="n">npts</span><span class="p">,</span> <span class="s1">&#39;phase&#39;</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span>
+        <span class="n">_spectral</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sf</span><span class="p">,</span> <span class="n">npts</span><span class="p">,</span> <span class="s1">&#39;phase&#39;</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span>
                            <span class="n">window</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="bp">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<span class="c1"># ------------------------------------------------------------</span>
-<span class="c1"># SUB GET FUNCTION</span>
-<span class="c1"># ------------------------------------------------------------</span>
-<span class="k">def</span> <span class="nf">_get</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Sub get function.</span>
-
-<span class="sd">    Get the spectral info of x.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">bsl</span><span class="p">,</span> <span class="n">norm</span><span class="p">,</span> <span class="n">n_perm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_baseline</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_norm</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_perm</span>
-    <span class="n">maxstat</span><span class="p">,</span> <span class="n">twotails</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mxst</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_2t</span>
-
-    <span class="c1"># Get the filter properties and apply:</span>
-    <span class="n">fMeth</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fobj</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sf</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fSplit</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_npts</span><span class="p">)</span>
-    <span class="n">xF</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fobj</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">fMeth</span><span class="p">)</span>
-    <span class="n">nf</span><span class="p">,</span> <span class="n">npts</span><span class="p">,</span> <span class="n">nt</span> <span class="o">=</span> <span class="n">xF</span><span class="o">.</span><span class="n">shape</span>
-
-    <span class="c1"># Mean through trials:</span>
-    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meanT</span><span class="p">:</span>
-        <span class="n">xF</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">xF</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-        <span class="n">xF</span> <span class="o">=</span> <span class="n">xF</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
-
-    <span class="c1"># Normalize power :</span>
-    <span class="k">if</span> <span class="n">norm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">xFm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">xF</span><span class="p">[:,</span> <span class="n">bsl</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="n">bsl</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">:],</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="n">baseline</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">xFm</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">xF</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">1</span><span class="p">])</span>
-        <span class="n">xFn</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">xF</span><span class="p">,</span> <span class="n">baseline</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">)</span>
-        <span class="k">del</span> <span class="n">xFm</span><span class="p">,</span> <span class="n">baseline</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">baseline</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">xF</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-        <span class="n">xFn</span> <span class="o">=</span> <span class="n">xF</span>
-
-    <span class="c1"># Mean Frequencies :</span>
-    <span class="c1"># xF, _ = binArray(xF, self._fSplitIndex, axis=0)</span>
-    <span class="n">xFn</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">binArray</span><span class="p">(</span><span class="n">xFn</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fSplitIndex</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-
-    <span class="c1"># Mean time :</span>
-    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_window</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-        <span class="c1"># xF, xvec = binArray(xF, self._window, axis=1)</span>
-        <span class="n">xFn</span><span class="p">,</span> <span class="n">xvec</span> <span class="o">=</span> <span class="n">binArray</span><span class="p">(</span><span class="n">xFn</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_window</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-
-    <span class="c1"># # Statistical evaluation :</span>
-    <span class="c1"># if (norm is not 0) and (self._statmeth is not &#39;none&#39;):</span>
-    <span class="c1">#     pvalues = _evalstat(xF, xFn, xFm, self._statmeth, n_perm, norm,</span>
-    <span class="c1">#                         maxstat, twotails)</span>
-    <span class="c1"># else:</span>
-    <span class="c1">#     pvalues = np.matrix([0])</span>
-
-    <span class="k">return</span> <span class="n">xFn</span>  <span class="c1"># , pvalues</span>
-
-
-<span class="k">def</span> <span class="nf">_evalstat</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">xn</span><span class="p">,</span> <span class="n">bsl</span><span class="p">,</span> <span class="n">meth</span><span class="p">,</span> <span class="n">n_perm</span><span class="p">,</span> <span class="n">norm</span><span class="p">,</span> <span class="n">maxstat</span><span class="p">,</span> <span class="n">twotails</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Statistical evaluation of features</span>
-
-<span class="sd">    [x] = [xn] = (nFce, npts, nTrials)</span>
-<span class="sd">    [bsl] = (nFce, nTrials)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Get shape of xF :</span>
-    <span class="n">nf</span><span class="p">,</span> <span class="n">npts</span><span class="p">,</span> <span class="n">nt</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span>
-    <span class="n">pvalues</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">nf</span><span class="p">,</span> <span class="n">npts</span><span class="p">))</span>
-
-    <span class="c1"># Permutations :</span>
-    <span class="k">if</span> <span class="n">meth</span> <span class="o">==</span> <span class="s1">&#39;permutation&#39;</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">brainpipe.xPOO.stats</span> <span class="kn">import</span> <span class="n">permutation</span>
-        <span class="c1"># Pre-define permutations :</span>
-        <span class="n">pObj</span> <span class="o">=</span> <span class="n">permutation</span><span class="p">(</span><span class="n">n_perm</span><span class="p">)</span>
-        <span class="n">perm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_perm</span><span class="p">,</span> <span class="n">nf</span><span class="p">,</span> <span class="n">npts</span><span class="p">))</span>
-        <span class="c1"># For each permutation :</span>
-        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_perm</span><span class="p">):</span>
-            <span class="c1"># Get 1D iterations :</span>
-            <span class="n">ite</span> <span class="o">=</span> <span class="n">product</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">nf</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="n">npts</span><span class="p">))</span>
-            <span class="n">permT</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">nt</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">f</span><span class="p">,</span> <span class="n">pts</span> <span class="ow">in</span> <span class="n">ite</span><span class="p">:</span>
-                <span class="n">bs</span><span class="p">,</span> <span class="n">xs</span> <span class="o">=</span> <span class="n">bsl</span><span class="p">[</span><span class="n">f</span><span class="p">,</span> <span class="p">:],</span> <span class="n">x</span><span class="p">[</span><span class="n">f</span><span class="p">,</span> <span class="n">pts</span><span class="p">,</span> <span class="p">:]</span>
-                <span class="c1"># Reshape data :</span>
-                <span class="n">subX</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">bsl</span><span class="p">[</span><span class="n">f</span><span class="p">,</span> <span class="p">:],</span> <span class="n">x</span><span class="p">[</span><span class="n">f</span><span class="p">,</span> <span class="n">pts</span><span class="p">,</span> <span class="p">:]))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">nt</span><span class="p">,)</span>
-                <span class="c1"># Shuffle data :</span>
-                <span class="n">subX</span> <span class="o">=</span> <span class="n">subX</span><span class="p">[</span><span class="n">permT</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">nt</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-                <span class="c1"># Normalize data :</span>
-                <span class="n">subX</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">subX</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">subX</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">)</span>
-                <span class="c1"># Get mean of data :</span>
-                <span class="n">perm</span><span class="p">[</span><span class="n">p</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">pts</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">subX</span><span class="p">)</span>
-        <span class="c1"># Get final pvalues :</span>
-        <span class="n">pvalues</span> <span class="o">=</span> <span class="n">pObj</span><span class="o">.</span><span class="n">perm2p</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">xn</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">perm</span><span class="p">,</span> <span class="n">twotails</span><span class="o">=</span><span class="n">twotails</span><span class="p">,</span>
-                              <span class="n">maxstat</span><span class="o">=</span><span class="n">maxstat</span><span class="p">)</span>
-
-    <span class="c1"># Wilcoxon test :</span>
-    <span class="k">elif</span> <span class="n">meth</span> <span class="o">==</span> <span class="s1">&#39;wilcoxon&#39;</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">wilcoxon</span>
-        <span class="c1"># Get iterations :</span>
-        <span class="n">ite</span> <span class="o">=</span> <span class="n">product</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">nf</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="n">npts</span><span class="p">))</span>
-        <span class="c1"># Compute wilcoxon :</span>
-        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ite</span><span class="p">:</span>
-            <span class="n">_</span><span class="p">,</span> <span class="n">pvalues</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">wilcoxon</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="p">:],</span> <span class="n">bsl</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="p">:])</span>
-
-    <span class="c1"># Kruskal-Wallis :</span>
-    <span class="k">elif</span> <span class="n">meth</span> <span class="o">==</span> <span class="s1">&#39;kruskal&#39;</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">kruskal</span>
-        <span class="c1"># Get iterations :</span>
-        <span class="n">ite</span> <span class="o">=</span> <span class="n">product</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">nf</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="n">npts</span><span class="p">))</span>
-        <span class="c1"># Compute Kruskal-Wallis :</span>
-        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ite</span><span class="p">:</span>
-            <span class="n">_</span><span class="p">,</span> <span class="n">pvalues</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">kruskal</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="p">:],</span> <span class="n">bsl</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="p">:])</span>
-
-    <span class="k">return</span> <span class="n">pvalues</span>
 </pre></div>
 
           </div>

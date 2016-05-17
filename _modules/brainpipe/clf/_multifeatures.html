@@ -84,7 +84,7 @@
 </ul>
 </li>
 </ul>
-<p class="caption"><span class="caption-text">STATISTIQUES</span></p>
+<p class="caption"><span class="caption-text">STATISTICS</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../stat.html">Statistics</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../stat.html#binomial">Binomial</a></li>
@@ -107,6 +107,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../tools.html">Tools</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../tools.html#bpstudy">Bpstudy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../tools.html#pandas-complements">Pandas complements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tools.html#arrays">Arrays</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../tools.html#file-management">File management</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../tools.html#others">Others</a></li>
 </ul>
@@ -155,7 +156,7 @@
 <span class="kn">from</span> <span class="nn">brainpipe.clf.utils._mf</span> <span class="kn">import</span> <span class="o">*</span>
 
 <span class="kn">from</span> <span class="nn">brainpipe.clf._classification</span> <span class="kn">import</span> <span class="n">defClf</span><span class="p">,</span> <span class="n">defCv</span>
-<span class="kn">from</span> <span class="nn">brainpipe.statistics</span> <span class="kn">import</span> <span class="n">binostatinv</span>
+<span class="kn">from</span> <span class="nn">brainpipe.statistics</span> <span class="kn">import</span> <span class="n">bino_da2p</span>
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;mf&#39;</span><span class="p">,</span> <span class="s1">&#39;sequence&#39;</span><span class="p">]</span>
@@ -263,7 +264,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_stat</span> <span class="o">=</span> <span class="n">stat</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">threshold</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="n">p</span> <span class="o">=</span> <span class="n">binostatinv</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">threshold</span><span class="p">)</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">bino_da2p</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">threshold</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_p</span> <span class="o">=</span> <span class="n">p</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_nbest</span> <span class="o">=</span> <span class="n">nbest</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_n_perm</span> <span class="o">=</span> <span class="n">n_perm</span>

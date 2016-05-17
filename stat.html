@@ -85,7 +85,7 @@
 </ul>
 </li>
 </ul>
-<p class="caption"><span class="caption-text">STATISTIQUES</span></p>
+<p class="caption"><span class="caption-text">STATISTICS</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Statistics</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#binomial">Binomial</a></li>
@@ -108,6 +108,7 @@
 <li class="toctree-l1"><a class="reference internal" href="tools.html">Tools</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="tools.html#bpstudy">Bpstudy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tools.html#pandas-complements">Pandas complements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.html#arrays">Arrays</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tools.html#file-management">File management</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tools.html#others">Others</a></li>
 </ul>
@@ -149,14 +150,317 @@
             
   <div class="section" id="statistics">
 <h1>Statistics<a class="headerlink" href="#statistics" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">brainpipe.statistics</span> <span class="kn">import</span> <span class="o">*</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><a class="reference internal" href="#bino"><span class="std std-ref">Binomial</span></a></li>
+<li><a class="reference internal" href="#perm"><span class="std std-ref">Permutations</span></a></li>
+<li><a class="reference internal" href="#mltpcomp"><span class="std std-ref">Multiple-comparisons</span></a></li>
+</ul>
 <div class="section" id="binomial">
-<h2>Binomial<a class="headerlink" href="#binomial" title="Permalink to this headline">¶</a></h2>
+<span id="bino"></span><h2>Binomial<a class="headerlink" href="#binomial" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="statistics.bino_da2p">
+<code class="descclassname">statistics.</code><code class="descname">bino_da2p</code><span class="sig-paren">(</span><em>y</em>, <em>da</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brainpipe/stat/binomial.html#bino_da2p"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#statistics.bino_da2p" title="Permalink to this definition">¶</a></dt>
+<dd><p>For a given vector label, get p-values of a decoding accuracy
+using the binomial law.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>y</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">array</span><dd>The vector label</dd>
+<dt>da: int / float / list /array [0 &lt;= da &lt;= 100]</dt>
+<dd>The decoding accuracy array. Ex : da = [75, 33, 25, 17].</dd>
+</dl>
+</dd>
+<dt>Return:</dt>
+<dd><dl class="first last docutils">
+<dt>p: ndarray</dt>
+<dd>The p-value associate to each decoding accuracy</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="statistics.bino_p2da">
+<code class="descclassname">statistics.</code><code class="descname">bino_p2da</code><span class="sig-paren">(</span><em>y</em>, <em>p</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brainpipe/stat/binomial.html#bino_p2da"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#statistics.bino_p2da" title="Permalink to this definition">¶</a></dt>
+<dd><p>For a given vector label, get the decoding accuracy of p-values
+using the binomial law.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>y: array</dt>
+<dd>The vector label</dd>
+<dt>p: int / float / list / array [0 &lt;= p &lt; 1]</dt>
+<dd>p-value. Ex : p = [0.05, 0.01, 0.001, 0.00001]</dd>
+</dl>
+</dd>
+<dt>Return:</dt>
+<dd><dl class="first last docutils">
+<dt>da: ndarray</dt>
+<dd>The decoding accuracy associate to each p-value</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="statistics.bino_signifeat">
+<code class="descclassname">statistics.</code><code class="descname">bino_signifeat</code><span class="sig-paren">(</span><em>feat</em>, <em>th</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brainpipe/stat/binomial.html#bino_signifeat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#statistics.bino_signifeat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get significants features.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>feat: array</dt>
+<dd>Array containing either decoding accuracy (da) either p-values</dd>
+<dt>th: int / float</dt>
+<dd>The threshold in order to find significants features.</dd>
+</dl>
+</dd>
+<dt>Return:</dt>
+<dd><dl class="first last docutils">
+<dt>index: array</dt>
+<dd>The index corresponding to significants features</dd>
+<dt>signi_feat: array</dt>
+<dd>The significants features</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 <div class="section" id="permutations">
-<h2>Permutations<a class="headerlink" href="#permutations" title="Permalink to this headline">¶</a></h2>
+<span id="perm"></span><h2>Permutations<a class="headerlink" href="#permutations" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="evaluation">
+<h3>Evaluation<a class="headerlink" href="#evaluation" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="statistics.perm_2pvalue">
+<code class="descclassname">statistics.</code><code class="descname">perm_2pvalue</code><span class="sig-paren">(</span><em>data</em>, <em>perm</em>, <em>n_perm</em>, <em>threshold=None</em>, <em>tail=2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brainpipe/stat/permutations.html#perm_2pvalue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#statistics.perm_2pvalue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the associated p-value of a permutation distribution</p>
+<dl class="docutils">
+<dt>Arg:</dt>
+<dd><dl class="first last docutils">
+<dt>data: array</dt>
+<dd>Array of real data. The shape must be (d1, d2, ..., dn)</dd>
+<dt>perm: array</dt>
+<dd>Array of permutations. The shape must be (n_perm, d1, d2, ..., dn)</dd>
+<dt>n_perm: int</dt>
+<dd>Number of permutations</dd>
+</dl>
+</dd>
+<dt>Kargs:</dt>
+<dd><dl class="first last docutils">
+<dt>threshold: int / float, optional, [def: None]</dt>
+<dd>Every values upper to threshold are going to be set to 1.</dd>
+<dt>tail: int, optional, [def: 2]</dt>
+<dd>Define if the calculation of p-value must take into account one
+or two tails of the permutation distribution</dd>
+</dl>
+</dd>
+<dt>Return:</dt>
+<dd><dl class="first last docutils">
+<dt>pvalue</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">array</span><dd>Array of associated p-values</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="statistics.perm_metric">
+<code class="descclassname">statistics.</code><code class="descname">perm_metric</code><span class="sig-paren">(</span><em>metric</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brainpipe/stat/permutations.html#perm_metric"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#statistics.perm_metric" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a metric for permutation normalization.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">metric: string/function</p>
+<blockquote class="last">
+<div><ul class="simple">
+<li>None: compare directly values without transformation</li>
+<li>&#8216;m_center&#8217;: (A-B)/mean(B) transformation</li>
+<li>&#8216;m_zscore&#8217;: (A-B)/std(B) transformation</li>
+<li>&#8216;m_minus&#8217;: (A-B) transformation</li>
+<li>function: user defined function [def myfcn(A, B): return array_like]</li>
+</ul>
+</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="generate">
+<h3>Generate<a class="headerlink" href="#generate" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="statistics.perm_rndDatasets">
+<code class="descclassname">statistics.</code><code class="descname">perm_rndDatasets</code><span class="sig-paren">(</span><em>mu=0</em>, <em>sigma=1</em>, <em>dmu=0.1</em>, <em>dsigma=0.1</em>, <em>size=(5</em>, <em>5)</em>, <em>rndstate=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brainpipe/stat/permutations.html#perm_rndDatasets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#statistics.perm_rndDatasets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate data and permutations uniformly distributed.</p>
+<dl class="docutils">
+<dt>Kargs:</dt>
+<dd><dl class="first last docutils">
+<dt>mu: int/float</dt>
+<dd>Center of the distribution</dd>
+<dt>sigma: int/float</dt>
+<dd>Deviation of the distribution</dd>
+<dt>dmu: int/float</dt>
+<dd>Introduce a shift to the mean of data</dd>
+<dt>dsigma: int/float</dt>
+<dd>Introduce a shift to the deviation of data</dd>
+<dt>size: tuple</dt>
+<dd>Size of the generated data and permutations (d1, d2, ..., d3)</dd>
+<dt>rndstate: int</dt>
+<dd>Fix the random state of the machine</dd>
+</dl>
+</dd>
+<dt>Returns:</dt>
+<dd><dl class="first last docutils">
+<dt>data: array</dt>
+<dd>Simulated data of shape (n_perm, d1, d2, ..., d3)</dd>
+<dt>perm: array</dt>
+<dd>Simulated permutations of shape (n_perm, d1, d2, ..., d3)</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="statistics.perm_swap">
+<code class="descclassname">statistics.</code><code class="descname">perm_swap</code><span class="sig-paren">(</span><em>a</em>, <em>b</em>, <em>n_perm=200</em>, <em>axis=-1</em>, <em>rndstate=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brainpipe/stat/permutations.html#perm_swap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#statistics.perm_swap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Permute values between two arrays and generate a number of permutations.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>a: ndarray</dt>
+<dd>Array of shape (d1, d2, ...)</dd>
+<dt>b: ndarray</dt>
+<dd>Array with the same shape of a</dd>
+<dt>n_pem: int</dt>
+<dd>Number of permutations</dd>
+</dl>
+</dd>
+<dt>Kargs:</dt>
+<dd><dl class="first last docutils">
+<dt>axis: int, optional, [def: -1]</dt>
+<dd>Axis for swapping values. If axis is -1, this mean that all
+values across all dimensions are going to be swap.</dd>
+<dt>rndstate: int</dt>
+<dd>Fix the random state of the machine</dd>
+</dl>
+</dd>
+<dt>Return:</dt>
+<dd><dl class="first last docutils">
+<dt>ash, bsh: array</dt>
+<dd>The two swapping arrays with a new shape of (n_perm ,d1, d2, ...)</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="statistics.perm_rep">
+<code class="descclassname">statistics.</code><code class="descname">perm_rep</code><span class="sig-paren">(</span><em>x</em>, <em>n_perm</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brainpipe/stat/permutations.html#perm_rep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#statistics.perm_rep" title="Permalink to this definition">¶</a></dt>
+<dd><p>Repeat a ndarray x n_perm times</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>x: array</dt>
+<dd>Data to repeat of shape (d1, d2, ..., d3)</dd>
+<dt>n_perm: int</dt>
+<dd>Number of permutations</dd>
+</dl>
+</dd>
+<dt>Returns:</dt>
+<dd><dl class="first last docutils">
+<dt>xrep: array</dt>
+<dd>Repeated data of shape (n_perm, d1, d2, ..., d3)</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
 </div>
 <div class="section" id="multiple-comparisons">
-<h2>Multiple-comparisons<a class="headerlink" href="#multiple-comparisons" title="Permalink to this headline">¶</a></h2>
+<span id="mltpcomp"></span><h2>Multiple-comparisons<a class="headerlink" href="#multiple-comparisons" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="bonferroni">
+<h3>Bonferroni<a class="headerlink" href="#bonferroni" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="statistics.bonferroni">
+<code class="descclassname">statistics.</code><code class="descname">bonferroni</code><span class="sig-paren">(</span><em>p</em>, <em>axis=-1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brainpipe/stat/multcomp.html#bonferroni"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#statistics.bonferroni" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bonferroni correction</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>p: array</dt>
+<dd>Array of p-values</dd>
+</dl>
+</dd>
+<dt>Kargs:</dt>
+<dd><dl class="first last docutils">
+<dt>axis: int, optional, [def: -1]</dt>
+<dd>Axis to apply the Bonferroni correction. If axis is -1,
+the correction is applied through all dimensions.</dd>
+</dl>
+</dd>
+<dt>Return:</dt>
+<dd>Corrected pvalues</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="false-discovery-rate-fdr">
+<h3>False Discovery Rate (FDR)<a class="headerlink" href="#false-discovery-rate-fdr" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="statistics.fdr">
+<code class="descclassname">statistics.</code><code class="descname">fdr</code><span class="sig-paren">(</span><em>p</em>, <em>q</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brainpipe/stat/multcomp.html#fdr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#statistics.fdr" title="Permalink to this definition">¶</a></dt>
+<dd><p>False Discovery Rate correction</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>p: array</dt>
+<dd>Array of p-values</dd>
+<dt>q: float</dt>
+<dd>Thresholding p-value</dd>
+</dl>
+</dd>
+<dt>Return:</dt>
+<dd><dl class="first last docutils">
+<dt>pcorr: array</dt>
+<dd>Corrected p-values</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="maximum-statistic">
+<h3>Maximum statistic<a class="headerlink" href="#maximum-statistic" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="statistics.maxstat">
+<code class="descclassname">statistics.</code><code class="descname">maxstat</code><span class="sig-paren">(</span><em>perm</em>, <em>axis=-1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brainpipe/stat/multcomp.html#maxstat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#statistics.maxstat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Correction by the maximum statistic</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>perm: array</dt>
+<dd>The permutations.</dd>
+<dt>axis: integer, optional, [def: -1]</dt>
+<dd>Use -1 to correct through all dimensions. Otherwise,
+use d1, d2, ... or dn to correct through a specific dimension.</dd>
+</dl>
+</dd>
+<dt>Kargs:</dt>
+<dd><dl class="first last docutils">
+<dt>permR: array</dt>
+<dd>The re-aranged permutations according to the selectionned
+axis. Then use perm_2pvalues to get the p-value according to this
+distribution.</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
 </div>
 </div>
 
