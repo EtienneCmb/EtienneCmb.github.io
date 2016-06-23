@@ -1,6 +1,3 @@
-Visualization
-=============
-
 
 .. code-block:: python
 
@@ -9,6 +6,9 @@ Visualization
 * :ref:`borderplt`
 * :ref:`addline`
 * :ref:`tilerplot`
+
+1-D graphics
+============
 
 .. _borderplt:
 
@@ -24,6 +24,31 @@ Border plot
    Border plot example
 
 .. _addline:
+
+p-value plot
+------------
+.. automodule:: visual
+   :members: addPval
+   :noindex:
+
+.. figure::  ../images/pval.png
+   :align:   center
+
+   Add p-values to an existing plot
+
+Continuous color
+----------------
+.. automodule:: visual
+   :members: continuouscol
+   :noindex:
+
+.. figure::  ../images/contcol.png
+   :align:   center
+
+   Continuous color-line
+
+1-D or 2-D graphics
+===================
 
 Add lines
 ---------
@@ -48,3 +73,10 @@ tilerplot
    :align:   center
 
    Automatic 1D and 2D plot
+
+
+Tools
+=====
+.. autofunction:: visual.rmaxis
+
+.. autofunction:: visual.despine
