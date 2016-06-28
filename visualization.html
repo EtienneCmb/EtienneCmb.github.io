@@ -107,6 +107,7 @@
 <li class="toctree-l1"><a class="reference internal" href="classification.html#define-a-classifier">Define a classifier</a></li>
 <li class="toctree-l1"><a class="reference internal" href="classification.html#define-a-cross-validation">Define a cross-validation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="classification.html#classify">Classify</a></li>
+<li class="toctree-l1"><a class="reference internal" href="classification.html#leave-p-subjects-out">Leave p-subjects out</a></li>
 <li class="toctree-l1"><a class="reference internal" href="classification.html#generalization">Generalization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="classification.html#multi-features">Multi-features</a></li>
 </ul>
@@ -462,7 +463,7 @@ dpax, rmax.</dd>
 
 <dl class="method">
 <dt>
-<code class="descname">plot2D</code><span class="sig-paren">(</span><em>fig</em>, <em>y</em>, <em>xvec=None</em>, <em>yvec=None</em>, <em>cmap='inferno'</em>, <em>colorbar=True</em>, <em>cbticks='minmax'</em>, <em>ycb=-10</em>, <em>cblabel=''</em>, <em>under=None</em>, <em>over=None</em>, <em>vmin=None</em>, <em>vmax=None</em>, <em>sharex=False</em>, <em>sharey=False</em>, <em>subdim=None</em>, <em>mask=None</em>, <em>interpolation='none'</em>, <em>resample=(0</em>, <em>0)</em>, <em>figtitle=''</em>, <em>transpose=False</em>, <em>maxplot=10</em>, <em>subspace=None</em>, <em>contour=None</em>, <em>pltargs={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brainpipe/visu/cmon_plt.html#tilerplot.plot2D"><span class="viewcode-link">[source]</span></a></dt>
+<code class="descname">plot2D</code><span class="sig-paren">(</span><em>fig</em>, <em>y</em>, <em>xvec=None</em>, <em>yvec=None</em>, <em>cmap='inferno'</em>, <em>colorbar=True</em>, <em>cbticks='minmax'</em>, <em>ycb=-10</em>, <em>cblabel=''</em>, <em>under=None</em>, <em>over=None</em>, <em>vmin=None</em>, <em>vmax=None</em>, <em>sharex=False</em>, <em>sharey=False</em>, <em>textin=False</em>, <em>textcolor='w'</em>, <em>textype='%.4f'</em>, <em>subdim=None</em>, <em>mask=None</em>, <em>interpolation='none'</em>, <em>resample=(0</em>, <em>0)</em>, <em>figtitle=''</em>, <em>transpose=False</em>, <em>maxplot=10</em>, <em>subspace=None</em>, <em>contour=None</em>, <em>pltargs={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brainpipe/visu/cmon_plt.html#tilerplot.plot2D"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Plot y as an image</p>
 <dl class="docutils">
 <dt>Args:</dt>
@@ -498,6 +499,12 @@ is a 3D matrix, the first dimension control the number of subplots.</dd>
 <dd>Control minimum and maximum of the image</dd>
 <dt>sharex, sharey: bool, optional, [def: False]</dt>
 <dd>Define if subplots should share x and y</dd>
+<dt>textin: bool, optional, [def: False]</dt>
+<dd>Display values inside the heatmap</dd>
+<dt>textcolor: string, optional, [def: &#8216;w&#8217;]</dt>
+<dd>Color of values inside the heatmap</dd>
+<dt>textype: string, optional, [def: &#8216;%.4f&#8217;]</dt>
+<dd>Way of display text inside the heatmap</dd>
 <dt>subdim: tuple, optional, [def: None]</dt>
 <dd>Force subplots to be subdim=(n_colums, n_rows)</dd>
 <dt>interpolation: string, optional, [def: &#8216;none&#8217;]</dt>

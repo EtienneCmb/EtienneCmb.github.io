@@ -107,6 +107,7 @@
 <li class="toctree-l1"><a class="reference internal" href="#define-a-classifier">Define a classifier</a></li>
 <li class="toctree-l1"><a class="reference internal" href="#define-a-cross-validation">Define a cross-validation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="#classify">Classify</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#leave-p-subjects-out">Leave p-subjects out</a></li>
 <li class="toctree-l1"><a class="reference internal" href="#generalization">Generalization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="#multi-features">Multi-features</a></li>
 </ul>
@@ -240,7 +241,7 @@
 <h1>Define a classifier<a class="headerlink" href="#define-a-classifier" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt>
-<em class="property">class </em><code class="descclassname">classification.</code><code class="descname">defClf</code><span class="sig-paren">(</span><em>y</em>, <em>clf='lda'</em>, <em>kern='rbf'</em>, <em>n_knn=10</em>, <em>n_tree=100</em>, <em>priors=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brainpipe/clf/_classification.html#defClf"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">class </em><code class="descclassname">classification.</code><code class="descname">defClf</code><span class="sig-paren">(</span><em>y</em>, <em>clf='lda'</em>, <em>kern='rbf'</em>, <em>n_knn=10</em>, <em>n_tree=100</em>, <em>priors=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brainpipe/clf/utils/_classif.html#defClf"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Choose a classifier and switch easyly between classifiers
 implemented in scikit-learn.</p>
 <dl class="docutils">
@@ -293,7 +294,7 @@ scikit-learn.</dd>
 <h1>Define a cross-validation<a class="headerlink" href="#define-a-cross-validation" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt>
-<em class="property">class </em><code class="descclassname">classification.</code><code class="descname">defCv</code><span class="sig-paren">(</span><em>y</em>, <em>cvtype='skfold'</em>, <em>n_folds=10</em>, <em>rndstate=0</em>, <em>rep=10</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brainpipe/clf/_classification.html#defCv"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">class </em><code class="descclassname">classification.</code><code class="descname">defCv</code><span class="sig-paren">(</span><em>y</em>, <em>cvtype='skfold'</em>, <em>n_folds=10</em>, <em>rndstate=0</em>, <em>rep=10</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brainpipe/clf/utils/_classif.html#defCv"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Choose a cross_validation (CV) and switch easyly between
 CV implemented in scikit-learn.</p>
 <dl class="docutils">
@@ -403,38 +404,11 @@ cross-validation. See the documentation of defCv.</dd>
 </div>
 <dl class="method">
 <dt>
-<code class="descname">confusion_matrix</code><span class="sig-paren">(</span><em>x</em>, <em>mf=False</em>, <em>center=False</em>, <em>grp=array([]</em>, <em>dtype=float64)</em>, <em>n_jobs=-1</em>, <em>normalize=True</em>, <em>update=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brainpipe/clf/_classification.html#classify.confusion_matrix"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Get confusion matrix.</p>
+<code class="descname">cm</code><span class="sig-paren">(</span><em>normalize=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brainpipe/clf/_classification.html#classify.cm"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Get the confusion matrix of each feature.</p>
 <dl class="docutils">
-<dt>Args:</dt>
-<dd><dl class="first last docutils">
-<dt>x: array</dt>
-<dd>Data to classify. Consider that x.shape = (N, M), N is the number
-of trials (which should be the length of y). M, the number of
-colums, is a supplementar dimension for classifying data. If M = 1,
-the data is consider as a single feature. If M &gt; 1, use the
-parameter mf to say if x should be consider as a single feature
-(mf=False) or multi-features (mf=True)</dd>
-</dl>
-</dd>
 <dt>Kargs:</dt>
 <dd><dl class="first last docutils">
-<dt>mf: bool, optional, [def: False]</dt>
-<dd>If mf=False, the returned decoding accuracy (da) will have a
-shape of (1, rep) where rep, is the number of repetitions.
-This mean that all the features are used together. If mf=True,
-da.shape = (M, rep), where M is the number of columns of x.</dd>
-<dt>center: optional, bool, [def: False]</dt>
-<dd>Normalize fatures with a zero mean by substracting then dividing
-by the mean. The center parameter should be set to True if the
-classifier is a svm.</dd>
-<dt>grp: array, optional, [def: array()]</dt>
-<dd>If mf=True, the grp parameter allow to define group of features.
-If x.shape = (N, 5) and grp=np.array([0,0,1,2,1]), this mean that
-3 groups of features will be considered : (0,1,2)</dd>
-<dt>n_jobs: integer, optional, [def: -1]</dt>
-<dd>Control the number of jobs to cumpute the decoding accuracy. If
-n_jobs = -1, all the jobs are used.</dd>
 <dt>normalize: bool, optional, [def: True]</dt>
 <dd>Normalize or not the confusion matrix</dd>
 <dt>update: bool, optional, [def: True]</dt>
@@ -445,16 +419,18 @@ previously found will be used to get confusion matrix.</dd>
 </dl>
 </dd>
 <dt>Return:</dt>
-<dd>A list of confusion matrix, depending of the size of x.</dd>
+<dd><dl class="first last docutils">
+<dt>CM: array</dt>
+<dd>Array of confusion matrix of shape (n_features x n_class x n_class)</dd>
+</dl>
+</dd>
 </dl>
 </dd></dl>
 
 <dl class="method">
 <dt>
-<code class="descname">fit</code><span class="sig-paren">(</span><em>x</em>, <em>mf=False</em>, <em>center=False</em>, <em>grp=array([]</em>, <em>dtype=float64)</em>, <em>n_jobs=-1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brainpipe/clf/_classification.html#classify.fit"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Apply the classification and cross-validation objects to the array x.
-this method return an array containing the decoding accuracy. The
-dimension of this arry depend of the input x.</p>
+<code class="descname">fit</code><span class="sig-paren">(</span><em>x</em>, <em>mf=False</em>, <em>center=False</em>, <em>grp=None</em>, <em>method='bino'</em>, <em>n_perm=200</em>, <em>rndstate=0</em>, <em>n_jobs=-1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brainpipe/clf/_classification.html#classify.fit"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Apply the classification and cross-validation objects to the array x.</p>
 <dl class="docutils">
 <dt>Args:</dt>
 <dd><dl class="first last docutils">
@@ -478,53 +454,7 @@ da.shape = (M, rep), where M is the number of columns of x.</dd>
 <dd>Normalize fatures with a zero mean by substracting then dividing
 by the mean. The center parameter should be set to True if the
 classifier is a svm.</dd>
-<dt>grp: array, optional, [def: array()]</dt>
-<dd>If mf=True, the grp parameter allow to define group of features.
-If x.shape = (N, 5) and grp=np.array([0,0,1,2,1]), this mean that
-3 groups of features will be considered : (0,1,2)</dd>
-<dt>n_jobs: integer, optional, [def: -1]</dt>
-<dd>Control the number of jobs to cumpute the decoding accuracy. If
-n_jobs = -1, all the jobs are used.</dd>
-</dl>
-</dd>
-<dt>Return:</dt>
-<dd><dl class="first last docutils">
-<dt>da: array</dt>
-<dd>The decoding accuracy.</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt>
-<code class="descname">fit_stat</code><span class="sig-paren">(</span><em>x</em>, <em>mf=False</em>, <em>center=False</em>, <em>grp=array([]</em>, <em>dtype=float64)</em>, <em>method='bino'</em>, <em>n_perm=200</em>, <em>rndstate=0</em>, <em>n_jobs=-1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brainpipe/clf/_classification.html#classify.fit_stat"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Evaluate the statistical significiancy of the decoding accuracy.</p>
-<blockquote>
-<div><dl class="docutils">
-<dt>Args:</dt>
-<dd><dl class="first last docutils">
-<dt>x: array</dt>
-<dd>Data to classify. Consider that x.shape = (N, M), N is the number
-of trials (which should be the length of y). M, the number of
-colums, is a supplementar dimension for classifying data. If M = 1,
-the data is consider as a single feature. If M &gt; 1, use the
-parameter mf to say if x should be consider as a single feature
-(mf=False) or multi-features (mf=True)</dd>
-</dl>
-</dd>
-<dt>Kargs:</dt>
-<dd><dl class="first last docutils">
-<dt>mf: bool, optional, [def: False]</dt>
-<dd>If mf=False, the returned decoding accuracy (da) will have a
-shape of (1, rep) where rep, is the number of repetitions.
-This mean that all the features are used together. If mf=True,
-da.shape = (M, rep), where M is the number of columns of x.</dd>
-<dt>center: optional, bool, [def: False]</dt>
-<dd>Normalize fatures with a zero mean by substracting then dividing
-by the mean. The center parameter should be set to True if the
-classifier is a svm.</dd>
-<dt>grp: array, optional, [def: array()]</dt>
+<dt>grp: array, optional, [def: None]</dt>
 <dd>If mf=True, the grp parameter allow to define group of features.
 If x.shape = (N, 5) and grp=np.array([0,0,1,2,1]), this mean that
 3 groups of features will be considered : (0,1,2)</dd>
@@ -554,15 +484,15 @@ n_jobs = -1, all the jobs are used.</dd>
 <dt>Return:</dt>
 <dd><dl class="first last docutils">
 <dt>da: array</dt>
-<dd>The decoding accuracy.</dd>
+<dd>The decoding accuracy of shape n_repetitions x n_features</dd>
 <dt>pvalue: array</dt>
-<dd>Array of associated pvalue</dd>
+<dd>Array of associated pvalue of shape n_features</dd>
 <dt>daPerm: array</dt>
-<dd>Array of all the decodings obtained for each permutations.</dd>
+<dd>Array of all the decodings obtained for each permutations of shape
+n_perm x n_features</dd>
 </dl>
 </dd>
 </dl>
-</div></blockquote>
 <p class="rubric">Footnotes</p>
 <table class="docutils footnote" frame="void" id="f8" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
@@ -574,6 +504,122 @@ n_jobs = -1, all the jobs are used.</dd>
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label">[2]</td><td><a class="reference external" href="http://www.ncbi.nlm.nih.gov/pubmed/25596422/">Combrisson and Jerbi, 2015</a></td></tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="leave-p-subjects-out">
+<h1>Leave p-subjects out<a class="headerlink" href="#leave-p-subjects-out" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">classification.</code><code class="descname">LeavePSubjectOut</code><span class="sig-paren">(</span><em>y</em>, <em>nsuj</em>, <em>pout=1</em>, <em>clf='lda'</em>, <em>**clfArg</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brainpipe/clf/_lpso.html#LeavePSubjectOut"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Leave p-subbject out cross-validation</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>y: list</dt>
+<dd>List of label vectors for each subject.</dd>
+<dt>nsuj: int</dt>
+<dd>Number of subjects</dd>
+</dl>
+</dd>
+<dt>Kargs:</dt>
+<dd><dl class="first last docutils">
+<dt>pout: int</dt>
+<dd>Number of subjects to leave out for testing. If pout=1,
+this is a leave one-subject out</dd>
+<dt>clf: int / string / classifier object, optional, [def: 0]</dt>
+<dd>Define a classifier. If clf is an integer or a string, the
+classifier will be defined inside classify. Otherwise, it is
+possible to define a classifier before with defClf and past it in clf.</dd>
+<dt>clfArg: supplementar arguments</dt>
+<dd>This dictionnary can be used to define supplementar arguments for the
+classifier. See the documentation of defClf.</dd>
+</dl>
+</dd>
+</dl>
+<dl class="method">
+<dt>
+<code class="descname">change_clf</code><span class="sig-paren">(</span><em>clf='lda'</em>, <em>**clfArg</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brainpipe/clf/_lpso.html#LeavePSubjectOut.change_clf"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Change the classifier</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">fit</code><span class="sig-paren">(</span><em>x</em>, <em>mf=False</em>, <em>center=False</em>, <em>grp=None</em>, <em>method='bino'</em>, <em>n_perm=200</em>, <em>rndstate=0</em>, <em>n_jobs=-1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brainpipe/clf/_lpso.html#LeavePSubjectOut.fit"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Apply the classification and cross-validation objects to the array x.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>x: list</dt>
+<dd>List of dataset for each subject. All the dataset in the list
+should have the same number of columns but the number of lines
+could be diffrent for each subject and must correspond to the 
+same number of lines each each label vector of y.</dd>
+</dl>
+</dd>
+<dt>Kargs:</dt>
+<dd><dl class="first last docutils">
+<dt>mf: bool, optional, [def: False]</dt>
+<dd>If mf=False, the returned decoding accuracy (da) will have a
+shape of (1, rep) where rep, is the number of repetitions.
+This mean that all the features are used together. If mf=True,
+da.shape = (M, rep), where M is the number of columns of x.</dd>
+<dt>center: optional, bool, [def: False]</dt>
+<dd>Normalize fatures with a zero mean by substracting then dividing
+by the mean. The center parameter should be set to True if the
+classifier is a svm.</dd>
+<dt>grp: array, optional, [def: None]</dt>
+<dd>If mf=True, the grp parameter allow to define group of features.
+If x.shape = (N, 5) and grp=np.array([0,0,1,2,1]), this mean that
+3 groups of features will be considered : (0,1,2)</dd>
+<dt>method: string, optional, [def: &#8216;bino&#8217;]</dt>
+<dd><p class="first">Four methods are implemented to test the statistical significiance
+of the decoding accuracy :</p>
+<blockquote>
+<div><ul class="simple">
+<li>&#8216;bino&#8217;: binomial test</li>
+<li>&#8216;label_rnd&#8217;: randomly shuffle the labels</li>
+</ul>
+</div></blockquote>
+<p class="last">Methods 2 and 3 are based on permutations. They should provide
+similar results. But 4 should be more conservative.</p>
+</dd>
+<dt>n_perm: integer, optional, [def: 200]</dt>
+<dd>Number of permutations for the methods 2, 3 and 4</dd>
+<dt>rndstate: integer, optional, [def: 0]</dt>
+<dd>Fix the random state of the machine. Usefull to reproduce results.</dd>
+<dt>n_jobs: integer, optional, [def: -1]</dt>
+<dd>Control the number of jobs to cumpute the decoding accuracy. If
+n_jobs = -1, all the jobs are used.</dd>
+</dl>
+</dd>
+<dt>Return:</dt>
+<dd><dl class="first last docutils">
+<dt>da: array</dt>
+<dd>The decoding accuracy of shape n_repetitions x n_features</dd>
+<dt>pvalue: array</dt>
+<dd>Array of associated pvalue of shape n_features</dd>
+<dt>daPerm: array</dt>
+<dd>Array of all the decodings obtained for each permutations of shape
+n_perm x n_features</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Footnotes</p>
+<table class="docutils footnote" frame="void" id="id1" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[3]</td><td><a class="reference external" href="http://www.jmlr.org/papers/volume11/ojala10a/ojala10a.pdf">Ojala and Garriga, 2010</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id3" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[4]</td><td><a class="reference external" href="http://www.ncbi.nlm.nih.gov/pubmed/25596422/">Combrisson and Jerbi, 2015</a></td></tr>
 </tbody>
 </table>
 </dd></dl>
@@ -632,7 +678,7 @@ as &#8220;generalization time&#8221;)</dd>
 </dl>
 </dd></dl>
 
-<div class="figure align-center" id="id1">
+<div class="figure align-center" id="id5">
 <img alt="_images/tg.png" src="_images/tg.png" />
 <p class="caption"><span class="caption-text">Time-generalization using two features (alpha and gamma power)</span></p>
 </div>
@@ -641,7 +687,7 @@ as &#8220;generalization time&#8221;)</dd>
 <h1>Multi-features<a class="headerlink" href="#multi-features" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt>
-<em class="property">class </em><code class="descclassname">classification.</code><code class="descname">mf</code><span class="sig-paren">(</span><em>y</em>, <em>Id='0'</em>, <em>p=0.05</em>, <em>n_perm=200</em>, <em>stat='bino'</em>, <em>threshold=None</em>, <em>nbest=10</em>, <em>direction='forward'</em>, <em>occurence='i%'</em>, <em>clfIn={'clf': 'lda'}</em>, <em>clfOut={'clf': 'lda'}</em>, <em>cvIn={'rep': 1</em>, <em>'cvtype': 'skfold'</em>, <em>'n_folds': 10}</em>, <em>cvOut={'rep': 10</em>, <em>'cvtype': 'skfold'</em>, <em>'n_folds': 10}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brainpipe/clf/_multifeatures.html#mf"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">class </em><code class="descclassname">classification.</code><code class="descname">mf</code><span class="sig-paren">(</span><em>y</em>, <em>Id='0'</em>, <em>p=0.05</em>, <em>n_perm=200</em>, <em>stat='bino'</em>, <em>threshold=None</em>, <em>nbest=10</em>, <em>direction='forward'</em>, <em>occurence='i%'</em>, <em>clfIn={'clf': 'lda'}</em>, <em>clfOut={'clf': 'lda'}</em>, <em>cvIn={'cvtype': 'skfold'</em>, <em>'n_folds': 10</em>, <em>'rep': 1}</em>, <em>cvOut={'cvtype': 'skfold'</em>, <em>'n_folds': 10</em>, <em>'rep': 10}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brainpipe/clf/_multifeatures.html#mf"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Compute multi-features (mf) with the possibility of using methods in
 cascade and run the mf on particular groups.</p>
 <dl class="docutils">

@@ -106,6 +106,7 @@
 <li class="toctree-l1"><a class="reference internal" href="classification.html#define-a-classifier">Define a classifier</a></li>
 <li class="toctree-l1"><a class="reference internal" href="classification.html#define-a-cross-validation">Define a cross-validation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="classification.html#classify">Classify</a></li>
+<li class="toctree-l1"><a class="reference internal" href="classification.html#leave-p-subjects-out">Leave p-subjects out</a></li>
 <li class="toctree-l1"><a class="reference internal" href="classification.html#generalization">Generalization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="classification.html#multi-features">Multi-features</a></li>
 </ul>
@@ -360,8 +361,8 @@
 </div>
 <table border="1" class="table-striped docutils">
 <colgroup>
-<col width="16%" />
-<col width="84%" />
+<col width="18%" />
+<col width="82%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Function</th>
@@ -384,31 +385,34 @@
 <tr class="row-even"><td>perm_metric</td>
 <td>Get a metric (usefull for mastat)</td>
 </tr>
-<tr class="row-odd"><td>perm_rndDatasets</td>
+<tr class="row-odd"><td>perm_pvalue2level</td>
+<td>Get p-associated level in a permutation distribution</td>
+</tr>
+<tr class="row-even"><td>perm_rndDatasets</td>
 <td>Generate random dataset of permutations</td>
 </tr>
-<tr class="row-even"><td>perm_swap</td>
+<tr class="row-odd"><td>perm_swap</td>
 <td>Randomly swap ndarray (matricial implementation)</td>
 </tr>
-<tr class="row-odd"><td>perm_rep</td>
+<tr class="row-even"><td>perm_rep</td>
 <td>Repeat a ndarray of permutations (matricial implementation)</td>
 </tr>
-<tr class="row-even"><td>bonferroni</td>
+<tr class="row-odd"><td>bonferroni</td>
 <td>Multiple comparison: Bonferroni</td>
 </tr>
-<tr class="row-odd"><td>fdr</td>
+<tr class="row-even"><td>fdr</td>
 <td>Multiple comparison: False Discovery Rate</td>
 </tr>
-<tr class="row-even"><td>maxstat</td>
+<tr class="row-odd"><td>maxstat</td>
 <td>Multiple comparison: Maximum statistic</td>
 </tr>
-<tr class="row-odd"><td>circ_corrcc</td>
+<tr class="row-even"><td>circ_corrcc</td>
 <td>Correlation coefficient between one circular and one linear random variable</td>
 </tr>
-<tr class="row-even"><td>circ_r</td>
+<tr class="row-odd"><td>circ_r</td>
 <td>Computes mean resultant vector length for circular data</td>
 </tr>
-<tr class="row-odd"><td>circ_rtest</td>
+<tr class="row-even"><td>circ_rtest</td>
 <td>Computes Rayleigh test for non-uniformity of circular data</td>
 </tr>
 </tbody>
@@ -495,6 +499,9 @@
 </tr>
 <tr class="row-even"><td>p2str</td>
 <td>Transform a p-value to string (usefull to save files with corresponding p-value)</td>
+</tr>
+<tr class="row-odd"><td>uorderlst</td>
+<td>Get unique ordered elements from a list</td>
 </tr>
 </tbody>
 </table>

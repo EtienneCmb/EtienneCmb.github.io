@@ -106,6 +106,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../classification.html#define-a-classifier">Define a classifier</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../classification.html#define-a-cross-validation">Define a cross-validation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../classification.html#classify">Classify</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../classification.html#leave-p-subjects-out">Leave p-subjects out</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../classification.html#generalization">Generalization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../classification.html#multi-features">Multi-features</a></li>
 </ul>
@@ -200,26 +201,20 @@
   <h1>Source code for brainpipe.clf._classification</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">sklearn.discriminant_analysis</span> <span class="kn">import</span> <span class="p">(</span><span class="n">LinearDiscriminantAnalysis</span><span class="p">,</span>
-                                           <span class="n">QuadraticDiscriminantAnalysis</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">sklearn.svm</span> <span class="kn">import</span> <span class="n">SVC</span><span class="p">,</span> <span class="n">LinearSVC</span><span class="p">,</span> <span class="n">NuSVC</span>
-<span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <span class="n">LogisticRegression</span>
-<span class="kn">from</span> <span class="nn">sklearn.ensemble</span> <span class="kn">import</span> <span class="n">RandomForestClassifier</span>
-<span class="kn">from</span> <span class="nn">sklearn.neighbors</span> <span class="kn">import</span> <span class="n">KNeighborsClassifier</span>
-<span class="kn">from</span> <span class="nn">sklearn.naive_bayes</span> <span class="kn">import</span> <span class="n">GaussianNB</span>
-<span class="kn">from</span> <span class="nn">sklearn.cross_validation</span> <span class="kn">import</span> <span class="p">(</span><span class="n">StratifiedKFold</span><span class="p">,</span> <span class="n">KFold</span><span class="p">,</span> <span class="n">LeaveOneOut</span><span class="p">,</span>
-                                      <span class="n">StratifiedShuffleSplit</span><span class="p">,</span> <span class="n">ShuffleSplit</span><span class="p">,</span>
-                                      <span class="n">LeaveOneLabelOut</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">accuracy_score</span><span class="p">,</span> <span class="n">confusion_matrix</span>
 <span class="kn">from</span> <span class="nn">sklearn.base</span> <span class="kn">import</span> <span class="n">clone</span>
-
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">accuracy_score</span><span class="p">,</span> <span class="n">confusion_matrix</span>
 <span class="kn">from</span> <span class="nn">joblib</span> <span class="kn">import</span> <span class="n">Parallel</span><span class="p">,</span> <span class="n">delayed</span>
 
-<span class="kn">from</span> <span class="nn">brainpipe.statistics</span> <span class="kn">import</span> <span class="n">bino_da2p</span><span class="p">,</span> <span class="n">perm_2pvalue</span>
-<span class="kn">from</span> <span class="nn">brainpipe.tools</span> <span class="kn">import</span> <span class="n">groupInList</span><span class="p">,</span> <span class="n">list2index</span>
+<span class="kn">from</span> <span class="nn">brainpipe.statistics</span> <span class="kn">import</span> <span class="p">(</span><span class="n">bino_da2p</span><span class="p">,</span> <span class="n">bino_p2da</span><span class="p">,</span>
+                                  <span class="n">perm_2pvalue</span><span class="p">,</span> <span class="n">permIntraClass</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">brainpipe.tools</span> <span class="kn">import</span> <span class="n">groupInList</span><span class="p">,</span> <span class="n">list2index</span><span class="p">,</span> <span class="n">uorderlst</span>
 <span class="kn">from</span> <span class="nn">brainpipe.sys.tools</span> <span class="kn">import</span> <span class="n">adaptsize</span>
+<span class="kn">from</span> <span class="nn">brainpipe.clf.utils._classif</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">brainpipe.clf.utils._clfplt</span> <span class="kn">import</span> <span class="n">clfplt</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
 
 <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">product</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;classify&#39;</span><span class="p">,</span>
            <span class="s1">&#39;defClf&#39;</span><span class="p">,</span>
@@ -227,8 +222,7 @@
            <span class="s1">&#39;generalization&#39;</span>
            <span class="p">]</span>
 
-
-<div class="viewcode-block" id="classify"><a class="viewcode-back" href="../../../classification.html#classification.classify">[docs]</a><span class="k">class</span> <span class="nc">classify</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="classify"><a class="viewcode-back" href="../../../classification.html#classification.classify">[docs]</a><span class="k">class</span> <span class="nc">classify</span><span class="p">(</span><span class="n">_classification</span><span class="p">,</span> <span class="n">clfplt</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Define a classification object and apply to classify data.</span>
 <span class="sd">    This class can be consider as a centralization of scikit-learn</span>
 <span class="sd">    tools, with a few more options.</span>
@@ -282,27 +276,12 @@
 <span class="sd">            &gt;&gt;&gt; # 1) and 2) are equivalent. Then use clfObj.fit() to classify data.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">clf</span><span class="o">=</span><span class="s1">&#39;lda&#39;</span><span class="p">,</span> <span class="n">cvtype</span><span class="o">=</span><span class="s1">&#39;skfold&#39;</span><span class="p">,</span> <span class="n">clfArg</span><span class="o">=</span><span class="p">{},</span> <span class="n">cvArg</span><span class="o">=</span><span class="p">{}):</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">y</span>
-
-        <span class="c1"># Define clf if it&#39;s not defined :</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">clf</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">)):</span>
-            <span class="n">clf</span> <span class="o">=</span> <span class="n">defClf</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">clf</span><span class="o">=</span><span class="n">clf</span><span class="p">,</span> <span class="o">**</span><span class="n">clfArg</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">clf</span> <span class="o">=</span> <span class="n">clf</span>
-
-        <span class="c1"># Define cv if it&#39;s not defined :</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cvtype</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="n">cvtype</span> <span class="o">=</span> <span class="n">defCv</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">cvtype</span><span class="o">=</span><span class="n">cvtype</span><span class="p">,</span> <span class="o">**</span><span class="n">cvArg</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cv</span> <span class="o">=</span> <span class="n">cvtype</span>
-
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lgStr</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; with a &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clf</span><span class="o">.</span><span class="n">lgStr</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">lgStr</span>
 
-<div class="viewcode-block" id="classify.fit"><a class="viewcode-back" href="../../../classification.html#classification.classify.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">mf</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">grp</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([]),</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+<div class="viewcode-block" id="classify.fit"><a class="viewcode-back" href="../../../classification.html#classification.classify.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">mf</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">grp</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="s1">&#39;bino&#39;</span><span class="p">,</span> <span class="n">n_perm</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">rndstate</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Apply the classification and cross-validation objects to the array x.</span>
-<span class="sd">        this method return an array containing the decoding accuracy. The</span>
-<span class="sd">        dimension of this arry depend of the input x.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            x: array</span>
@@ -325,49 +304,7 @@
 <span class="sd">                by the mean. The center parameter should be set to True if the</span>
 <span class="sd">                classifier is a svm.</span>
 
-<span class="sd">            grp: array, optional, [def: array()]</span>
-<span class="sd">                If mf=True, the grp parameter allow to define group of features.</span>
-<span class="sd">                If x.shape = (N, 5) and grp=np.array([0,0,1,2,1]), this mean that</span>
-<span class="sd">                3 groups of features will be considered : (0,1,2)</span>
-
-<span class="sd">            n_jobs: integer, optional, [def: -1]</span>
-<span class="sd">                Control the number of jobs to cumpute the decoding accuracy. If</span>
-<span class="sd">                n_jobs = -1, all the jobs are used.</span>
-
-<span class="sd">        Return:</span>
-<span class="sd">            da: array</span>
-<span class="sd">                The decoding accuracy.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">da</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ytrue</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ypred</span> <span class="o">=</span> <span class="n">_fit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">clf</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cv</span><span class="p">,</span>
-                                                  <span class="n">mf</span><span class="p">,</span> <span class="n">grp</span><span class="p">,</span> <span class="n">center</span><span class="p">,</span> <span class="n">n_jobs</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">da</span></div>
-
-<div class="viewcode-block" id="classify.fit_stat"><a class="viewcode-back" href="../../../classification.html#classification.classify.fit_stat">[docs]</a>    <span class="k">def</span> <span class="nf">fit_stat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">mf</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">grp</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([]),</span>
-                 <span class="n">method</span><span class="o">=</span><span class="s1">&#39;bino&#39;</span><span class="p">,</span> <span class="n">n_perm</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">rndstate</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Evaluate the statistical significiancy of the decoding accuracy.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            x: array</span>
-<span class="sd">                Data to classify. Consider that x.shape = (N, M), N is the number</span>
-<span class="sd">                of trials (which should be the length of y). M, the number of</span>
-<span class="sd">                colums, is a supplementar dimension for classifying data. If M = 1,</span>
-<span class="sd">                the data is consider as a single feature. If M &gt; 1, use the</span>
-<span class="sd">                parameter mf to say if x should be consider as a single feature</span>
-<span class="sd">                (mf=False) or multi-features (mf=True)</span>
-
-<span class="sd">        Kargs:</span>
-<span class="sd">            mf: bool, optional, [def: False]</span>
-<span class="sd">                If mf=False, the returned decoding accuracy (da) will have a</span>
-<span class="sd">                shape of (1, rep) where rep, is the number of repetitions.</span>
-<span class="sd">                This mean that all the features are used together. If mf=True,</span>
-<span class="sd">                da.shape = (M, rep), where M is the number of columns of x.</span>
-
-<span class="sd">            center: optional, bool, [def: False]</span>
-<span class="sd">                Normalize fatures with a zero mean by substracting then dividing</span>
-<span class="sd">                by the mean. The center parameter should be set to True if the</span>
-<span class="sd">                classifier is a svm.</span>
-
-<span class="sd">            grp: array, optional, [def: array()]</span>
+<span class="sd">            grp: array, optional, [def: None]</span>
 <span class="sd">                If mf=True, the grp parameter allow to define group of features.</span>
 <span class="sd">                If x.shape = (N, 5) and grp=np.array([0,0,1,2,1]), this mean that</span>
 <span class="sd">                3 groups of features will be considered : (0,1,2)</span>
@@ -396,105 +333,85 @@
 
 <span class="sd">        Return:</span>
 <span class="sd">            da: array</span>
-<span class="sd">                The decoding accuracy.</span>
+<span class="sd">                The decoding accuracy of shape n_repetitions x n_features</span>
 
 <span class="sd">            pvalue: array</span>
-<span class="sd">                Array of associated pvalue</span>
+<span class="sd">                Array of associated pvalue of shape n_features</span>
 
 <span class="sd">            daPerm: array</span>
-<span class="sd">                Array of all the decodings obtained for each permutations.</span>
+<span class="sd">                Array of all the decodings obtained for each permutations of shape</span>
+<span class="sd">                n_perm x n_features</span>
 
-
-<span class="sd">    .. rubric:: Footnotes</span>
-<span class="sd">    .. [#f8] `Ojala and Garriga, 2010 &lt;http://www.jmlr.org/papers/volume11/ojala10a/ojala10a.pdf&gt;`_</span>
-<span class="sd">    .. [#f9] `Combrisson and Jerbi, 2015 &lt;http://www.ncbi.nlm.nih.gov/pubmed/25596422/&gt;`_</span>
-
+<span class="sd">        .. rubric:: Footnotes</span>
+<span class="sd">        .. [#f8] `Ojala and Garriga, 2010 &lt;http://www.jmlr.org/papers/volume11/ojala10a/ojala10a.pdf&gt;`_</span>
+<span class="sd">        .. [#f9] `Combrisson and Jerbi, 2015 &lt;http://www.ncbi.nlm.nih.gov/pubmed/25596422/&gt;`_</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Get the current da</span>
-        <span class="n">da</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ytrue</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ypred</span> <span class="o">=</span> <span class="n">_fit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">clf</span><span class="p">,</span>
-                                                  <span class="bp">self</span><span class="o">.</span><span class="n">cv</span><span class="p">,</span> <span class="n">mf</span><span class="p">,</span> <span class="n">grp</span><span class="p">,</span> <span class="n">center</span><span class="p">,</span>
-                                                  <span class="n">n_jobs</span><span class="p">)</span>
-        <span class="n">score</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">da</span><span class="p">])</span>
+        <span class="c1"># Get the true decoding accuracy:</span>
+        <span class="n">da</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ytrue</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ypred</span> <span class="o">=</span> <span class="n">_fit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clf</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cv</span><span class="o">.</span><span class="n">cvr</span><span class="p">,</span>
+                                                  <span class="n">mf</span><span class="p">,</span> <span class="n">grp</span><span class="p">,</span> <span class="n">center</span><span class="p">,</span> <span class="n">n_jobs</span><span class="p">)</span>
+        <span class="n">nfeat</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
         <span class="n">rndstate</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="n">rndstate</span><span class="p">)</span>
+        <span class="n">score</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">da</span><span class="p">])</span>
 
+        <span class="c1"># Get statistics:</span>
         <span class="c1"># -------------------------------------------------------------</span>
         <span class="c1"># Binomial :</span>
         <span class="c1"># -------------------------------------------------------------</span>
         <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;bino&#39;</span><span class="p">:</span>
-            <span class="n">pvalue</span> <span class="o">=</span> <span class="n">bino_da2p</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">score</span><span class="p">)</span>
-            <span class="n">daPerm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
-
+            <span class="n">pvalue</span> <span class="o">=</span> <span class="n">bino_da2p</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">score</span><span class="p">)</span>
+            <span class="n">daPerm</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="n">pperm</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="c1"># -------------------------------------------------------------</span>
         <span class="c1"># Permutations :</span>
         <span class="c1"># -------------------------------------------------------------</span>
         <span class="k">elif</span> <span class="n">method</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;_rnd&#39;</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span>
 
             <span class="c1"># Generate idx tricks :</span>
-            <span class="n">claIdx</span><span class="p">,</span> <span class="n">listPerm</span><span class="p">,</span> <span class="n">listFeat</span> <span class="o">=</span> <span class="n">list2index</span><span class="p">(</span><span class="n">n_perm</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+            <span class="n">iteract</span> <span class="o">=</span> <span class="n">product</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n_perm</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="n">nfeat</span><span class="p">))</span>
 
             <span class="c1"># -&gt; Shuffle the labels :</span>
             <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;label_rnd&#39;</span><span class="p">:</span>
                 <span class="n">y_sh</span> <span class="o">=</span> <span class="p">[</span><span class="n">rndstate</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_perm</span><span class="p">)]</span>
                 <span class="n">cvs</span> <span class="o">=</span> <span class="n">Parallel</span><span class="p">(</span><span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">)(</span><span class="n">delayed</span><span class="p">(</span><span class="n">_cvscore</span><span class="p">)(</span>
-                        <span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="n">y_sh</span><span class="p">[</span><span class="n">k</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">clone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clf</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">cv</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-                        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">claIdx</span><span class="p">)</span>
+                        <span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">y_sh</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">clone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_clf</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cv</span><span class="o">.</span><span class="n">cvr</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">iteract</span><span class="p">)</span>
 
             <span class="c1"># -&gt; Full randomization :</span>
             <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;full_rnd&#39;</span><span class="p">:</span>
                 <span class="n">cvs</span> <span class="o">=</span> <span class="n">Parallel</span><span class="p">(</span><span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">)(</span><span class="n">delayed</span><span class="p">(</span><span class="n">_cvscore</span><span class="p">)(</span>
-                        <span class="n">rndstate</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">[</span><span class="mi">1</span><span class="p">]]),</span> <span class="n">y</span><span class="p">,</span> <span class="n">clone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clf</span><span class="p">),</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">cv</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">claIdx</span><span class="p">)</span>
+                        <span class="n">rndstate</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">]),</span> <span class="n">y</span><span class="p">,</span> <span class="n">clone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_clf</span><span class="p">),</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_cv</span><span class="o">.</span><span class="n">cvr</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">iteract</span><span class="p">)</span>
 
             <span class="c1"># -&gt; Shuffle intra-class :</span>
             <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;intra_rnd&#39;</span><span class="p">:</span>
                 <span class="n">cvs</span> <span class="o">=</span> <span class="n">Parallel</span><span class="p">(</span><span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">)(</span><span class="n">delayed</span><span class="p">(</span><span class="n">_cvscore</span><span class="p">)(</span>
-                        <span class="n">permIntraClass</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="n">y</span><span class="p">,</span> <span class="n">k</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">y</span><span class="p">,</span> <span class="n">clone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clf</span><span class="p">),</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">cv</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">claIdx</span><span class="p">)</span>
+                        <span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">permIntraClass</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">rnd</span><span class="o">=</span><span class="n">i</span><span class="p">),</span> <span class="p">:],</span> <span class="n">y</span><span class="p">,</span> <span class="n">clone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_clf</span><span class="p">),</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_cv</span><span class="o">.</span><span class="n">cvr</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">iteract</span><span class="p">)</span>
 
             <span class="c1"># Reconstruct daPerm and get the associated p-value:</span>
             <span class="n">daPerm</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">cvs</span><span class="p">)</span>
-            <span class="n">daPerm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">groupInList</span><span class="p">(</span><span class="n">daPerm</span><span class="p">,</span> <span class="n">listFeat</span><span class="p">))</span>
-            <span class="n">pvalue</span> <span class="o">=</span> <span class="n">perm_2pvalue</span><span class="p">(</span><span class="n">score</span><span class="p">,</span> <span class="n">daPerm</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">n_perm</span><span class="p">,</span> <span class="n">tail</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">daPerm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">daPerm</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">n_perm</span><span class="p">,</span> <span class="n">nfeat</span><span class="p">)</span>
+            <span class="n">pvalue</span> <span class="o">=</span> <span class="n">perm_2pvalue</span><span class="p">(</span><span class="n">score</span><span class="p">,</span> <span class="n">daPerm</span><span class="p">,</span> <span class="n">n_perm</span><span class="p">,</span> <span class="n">tail</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">pperm</span> <span class="o">=</span> <span class="n">pvalue</span>
 
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;No statistical method &#39;</span><span class="o">+</span><span class="n">method</span><span class="o">+</span><span class="s1">&#39; found&#39;</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">da</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pvalue</span><span class="p">),</span> <span class="n">daPerm</span></div>
+        <span class="c1"># Get features informations:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">grp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">grp</span> <span class="o">=</span> <span class="n">uorderlst</span><span class="p">(</span><span class="n">grp</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">featinfo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">_featinfo</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_clf</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cv</span><span class="p">,</span> <span class="n">da</span><span class="p">,</span>
+                                                     <span class="n">grp</span><span class="o">=</span><span class="n">grp</span><span class="p">,</span> <span class="n">pperm</span><span class="o">=</span><span class="n">pperm</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">pass</span>
 
-<div class="viewcode-block" id="classify.confusion_matrix"><a class="viewcode-back" href="../../../classification.html#classification.classify.confusion_matrix">[docs]</a>    <span class="k">def</span> <span class="nf">confusion_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">mf</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">grp</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([]),</span>
-                         <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">update</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Get confusion matrix.</span>
+        <span class="k">return</span> <span class="n">da</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">pvalue</span><span class="p">,</span> <span class="n">daPerm</span></div>
 
-<span class="sd">        Args:</span>
-<span class="sd">            x: array</span>
-<span class="sd">                Data to classify. Consider that x.shape = (N, M), N is the number</span>
-<span class="sd">                of trials (which should be the length of y). M, the number of</span>
-<span class="sd">                colums, is a supplementar dimension for classifying data. If M = 1,</span>
-<span class="sd">                the data is consider as a single feature. If M &gt; 1, use the</span>
-<span class="sd">                parameter mf to say if x should be consider as a single feature</span>
-<span class="sd">                (mf=False) or multi-features (mf=True)</span>
+<div class="viewcode-block" id="classify.cm"><a class="viewcode-back" href="../../../classification.html#classification.classify.cm">[docs]</a>    <span class="k">def</span> <span class="nf">cm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the confusion matrix of each feature.</span>
 
 <span class="sd">        Kargs:</span>
-<span class="sd">            mf: bool, optional, [def: False]</span>
-<span class="sd">                If mf=False, the returned decoding accuracy (da) will have a</span>
-<span class="sd">                shape of (1, rep) where rep, is the number of repetitions.</span>
-<span class="sd">                This mean that all the features are used together. If mf=True,</span>
-<span class="sd">                da.shape = (M, rep), where M is the number of columns of x.</span>
-
-<span class="sd">            center: optional, bool, [def: False]</span>
-<span class="sd">                Normalize fatures with a zero mean by substracting then dividing</span>
-<span class="sd">                by the mean. The center parameter should be set to True if the</span>
-<span class="sd">                classifier is a svm.</span>
-
-<span class="sd">            grp: array, optional, [def: array()]</span>
-<span class="sd">                If mf=True, the grp parameter allow to define group of features.</span>
-<span class="sd">                If x.shape = (N, 5) and grp=np.array([0,0,1,2,1]), this mean that</span>
-<span class="sd">                3 groups of features will be considered : (0,1,2)</span>
-
-<span class="sd">            n_jobs: integer, optional, [def: -1]</span>
-<span class="sd">                Control the number of jobs to cumpute the decoding accuracy. If</span>
-<span class="sd">                n_jobs = -1, all the jobs are used.</span>
-
 <span class="sd">            normalize: bool, optional, [def: True]</span>
 <span class="sd">                Normalize or not the confusion matrix</span>
 
@@ -505,29 +422,24 @@
 <span class="sd">                previously found will be used to get confusion matrix.</span>
 
 <span class="sd">        Return:</span>
-<span class="sd">            A list of confusion matrix, depending of the size of x.</span>
+<span class="sd">            CM: array</span>
+<span class="sd">                Array of confusion matrix of shape (n_features x n_class x n_class)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Re-classify data or use the already existing labels :</span>
-        <span class="k">if</span> <span class="n">update</span><span class="p">:</span>
-            <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ytrue</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ypred</span> <span class="o">=</span> <span class="n">_fit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">clf</span><span class="p">,</span>
-                                                     <span class="bp">self</span><span class="o">.</span><span class="n">cv</span><span class="p">,</span> <span class="n">mf</span><span class="p">,</span> <span class="n">grp</span><span class="p">,</span> <span class="n">center</span><span class="p">,</span>
-                                                     <span class="n">n_jobs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">((</span><span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_ytrue&#39;</span><span class="p">))</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_ypred&#39;</span><span class="p">))):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No labels found. Please run .fit()&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="p">((</span><span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_ytrue&#39;</span><span class="p">))</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_ypred&#39;</span><span class="p">))):</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No labels found. Please either run .fit()&quot;</span>
-                                 <span class="s2">&quot;or .fit_stat() before or set update=True&quot;</span><span class="p">)</span>
+            <span class="c1"># Get variables and compute confusion matrix:</span>
+            <span class="n">y_pred</span><span class="p">,</span> <span class="n">y_true</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ypred</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ytrue</span>
+            <span class="n">nfeat</span><span class="p">,</span> <span class="n">nrep</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_true</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_true</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">CM</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">confusion_matrix</span><span class="p">(</span><span class="n">y_true</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">i</span><span class="p">],</span> <span class="n">y_pred</span><span class="p">[</span>
+                <span class="n">k</span><span class="p">][</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nrep</span><span class="p">)]),</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nfeat</span><span class="p">)]</span>
 
-        <span class="c1"># Get variables and compute confusion matrix:</span>
-        <span class="n">y_pred</span><span class="p">,</span> <span class="n">y_true</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ypred</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ytrue</span>
-        <span class="n">nfeat</span><span class="p">,</span> <span class="n">nrep</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_true</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_true</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-        <span class="n">cm</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">confusion_matrix</span><span class="p">(</span><span class="n">y_true</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">i</span><span class="p">],</span> <span class="n">y_pred</span><span class="p">[</span>
-            <span class="n">k</span><span class="p">][</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nrep</span><span class="p">)]),</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nfeat</span><span class="p">)]</span>
+            <span class="c1"># Normalize the confusion matrix :</span>
+            <span class="k">if</span> <span class="n">normalize</span><span class="p">:</span>
+                <span class="n">CM</span> <span class="o">=</span> <span class="p">[</span><span class="mi">100</span><span class="o">*</span><span class="n">k</span><span class="o">/</span><span class="n">k</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">CM</span><span class="p">]</span>
 
-        <span class="c1"># Normalize the confusion matrix :</span>
-        <span class="k">if</span> <span class="n">normalize</span><span class="p">:</span>
-            <span class="n">cm</span> <span class="o">=</span> <span class="p">[</span><span class="mi">100</span><span class="o">*</span><span class="n">k</span><span class="o">/</span><span class="n">k</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">cm</span><span class="p">]</span>
-
-        <span class="k">return</span> <span class="n">cm</span></div></div>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">CM</span><span class="p">)</span></div></div>
 
 
 <span class="k">def</span> <span class="nf">_fit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">clf</span><span class="p">,</span> <span class="n">cv</span><span class="p">,</span> <span class="n">mf</span><span class="p">,</span> <span class="n">grp</span><span class="p">,</span> <span class="n">center</span><span class="p">,</span> <span class="n">n_jobs</span><span class="p">):</span>
@@ -552,276 +464,6 @@
     <span class="n">y_pred</span> <span class="o">=</span> <span class="n">groupInList</span><span class="p">(</span><span class="n">y_pred</span><span class="p">,</span> <span class="n">listFeat</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">da</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span>
-
-
-<span class="k">def</span> <span class="nf">_cvscore</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">clf</span><span class="p">,</span> <span class="n">cvS</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Get the decoding accuracy of one cross-validation</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">y_pred</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">y_true</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">trainidx</span><span class="p">,</span> <span class="n">testidx</span> <span class="ow">in</span> <span class="n">cvS</span><span class="p">:</span>
-        <span class="n">xtrain</span><span class="p">,</span> <span class="n">xtest</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">trainidx</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="n">testidx</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
-        <span class="n">ytrain</span><span class="p">,</span> <span class="n">ytest</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">trainidx</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="n">testidx</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
-        <span class="n">clf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">xtrain</span><span class="p">,</span> <span class="n">ytrain</span><span class="p">)</span>
-        <span class="n">y_pred</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">clf</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">xtest</span><span class="p">))</span>
-        <span class="n">y_true</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">ytest</span><span class="p">)</span>
-    <span class="k">return</span> <span class="mi">100</span><span class="o">*</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">),</span> <span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span>
-
-
-<div class="viewcode-block" id="defClf"><a class="viewcode-back" href="../../../classification.html#classification.defClf">[docs]</a><span class="k">class</span> <span class="nc">defClf</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-
-    <span class="sd">&quot;&quot;&quot;Choose a classifier and switch easyly between classifiers</span>
-<span class="sd">    implemented in scikit-learn.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        y: array</span>
-<span class="sd">            The vector label</span>
-
-<span class="sd">    clf: int or string, optional, [def: 0]</span>
-<span class="sd">        Define a classifier. Use either an integer or a string</span>
-<span class="sd">        Choose between:</span>
-
-<span class="sd">            - 0 / &#39;lda&#39;: Linear Discriminant Analysis (LDA)</span>
-<span class="sd">            - 1 / &#39;svm&#39;: Support Vector Machine (SVM)</span>
-<span class="sd">            - 2 / &#39;linearsvm&#39; : Linear SVM</span>
-<span class="sd">            - 3 / &#39;nusvm&#39;: Nu SVM</span>
-<span class="sd">            - 4 / &#39;nb&#39;: Naive Bayesian</span>
-<span class="sd">            - 5 / &#39;knn&#39;: k-Nearest Neighbor</span>
-<span class="sd">            - 6 / &#39;rf&#39;: Random Forest</span>
-<span class="sd">            - 7 / &#39;lr&#39;: Logistic Regression</span>
-<span class="sd">            - 8 / &#39;qda&#39;: Quadratic Discriminant Analysis</span>
-
-<span class="sd">    kern: string, optional, [def: &#39;rbf&#39;]</span>
-<span class="sd">        Kernel of the &#39;svm&#39; classifier</span>
-
-<span class="sd">    n_knn: int, optional, [def: 10]</span>
-<span class="sd">        Number of neighbors for the &#39;knn&#39; classifier</span>
-
-<span class="sd">    n_tree: int, optional, [def: 100]</span>
-<span class="sd">        Number of trees for the &#39;rf&#39; classifier</span>
-
-<span class="sd">    Kargs:</span>
-<span class="sd">        optional arguments. To define other parameters, see the description of</span>
-<span class="sd">        scikit-learn.</span>
-
-<span class="sd">    Return:</span>
-<span class="sd">        A scikit-learn classification objects with two supplementar arguments :</span>
-
-<span class="sd">            - lgStr : long description of the classifier</span>
-<span class="sd">            - shStr : short description of the classifier</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">clf</span><span class="o">=</span><span class="s1">&#39;lda&#39;</span><span class="p">,</span> <span class="n">kern</span><span class="o">=</span><span class="s1">&#39;rbf&#39;</span><span class="p">,</span> <span class="n">n_knn</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">n_tree</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
-                 <span class="n">priors</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">pass</span>
-
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">lgStr</span>
-
-    <span class="k">def</span> <span class="nf">__new__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">clf</span><span class="o">=</span><span class="s1">&#39;lda&#39;</span><span class="p">,</span> <span class="n">kern</span><span class="o">=</span><span class="s1">&#39;rbf&#39;</span><span class="p">,</span> <span class="n">n_knn</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">n_tree</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
-                <span class="n">priors</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-
-        <span class="c1"># Default value for priors :</span>
-        <span class="n">priors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">y</span><span class="p">))]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">y</span><span class="p">)))</span>
-
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">clf</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="n">clf</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-
-        <span class="c1"># LDA :</span>
-        <span class="k">if</span> <span class="n">clf</span> <span class="o">==</span> <span class="s1">&#39;lda&#39;</span> <span class="ow">or</span> <span class="n">clf</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">clfObj</span> <span class="o">=</span> <span class="n">LinearDiscriminantAnalysis</span><span class="p">(</span>
-                <span class="n">priors</span><span class="o">=</span><span class="n">priors</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-            <span class="n">clfObj</span><span class="o">.</span><span class="n">lgStr</span> <span class="o">=</span> <span class="s1">&#39;Linear Discriminant Analysis&#39;</span>
-            <span class="n">clfObj</span><span class="o">.</span><span class="n">shStr</span> <span class="o">=</span> <span class="s1">&#39;LDA&#39;</span>
-
-        <span class="c1"># SVM : ‘linear’, ‘poly’, ‘rbf’, ‘sigmoid’, ‘precomputed’ or a callable</span>
-        <span class="k">elif</span> <span class="n">clf</span> <span class="o">==</span> <span class="s1">&#39;svm&#39;</span> <span class="ow">or</span> <span class="n">clf</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">clfObj</span> <span class="o">=</span> <span class="n">SVC</span><span class="p">(</span><span class="n">kernel</span><span class="o">=</span><span class="n">kern</span><span class="p">,</span> <span class="n">probability</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-            <span class="n">clfObj</span><span class="o">.</span><span class="n">lgStr</span> <span class="o">=</span> <span class="s1">&#39;Support Vector Machine (kernel=&#39;</span> <span class="o">+</span> <span class="n">kern</span> <span class="o">+</span> <span class="s1">&#39;)&#39;</span>
-            <span class="n">clfObj</span><span class="o">.</span><span class="n">shStr</span> <span class="o">=</span> <span class="s1">&#39;SVM-&#39;</span> <span class="o">+</span> <span class="n">kern</span>
-
-        <span class="c1"># Linear SVM:</span>
-        <span class="k">elif</span> <span class="n">clf</span> <span class="o">==</span> <span class="s1">&#39;linearsvm&#39;</span> <span class="ow">or</span> <span class="n">clf</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="n">clfObj</span> <span class="o">=</span> <span class="n">LinearSVC</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-            <span class="n">clfObj</span><span class="o">.</span><span class="n">lgStr</span> <span class="o">=</span> <span class="s1">&#39;Linear Support Vector Machine&#39;</span>
-            <span class="n">clfObj</span><span class="o">.</span><span class="n">shStr</span> <span class="o">=</span> <span class="s1">&#39;LSVM&#39;</span>
-
-        <span class="c1"># Nu SVM :</span>
-        <span class="k">elif</span> <span class="n">clf</span> <span class="o">==</span> <span class="s1">&#39;nusvm&#39;</span> <span class="ow">or</span> <span class="n">clf</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
-            <span class="n">clfObj</span> <span class="o">=</span> <span class="n">NuSVC</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-            <span class="n">clfObj</span><span class="o">.</span><span class="n">lgStr</span> <span class="o">=</span> <span class="s1">&#39;Nu Support Vector Machine&#39;</span>
-            <span class="n">clfObj</span><span class="o">.</span><span class="n">shStr</span> <span class="o">=</span> <span class="s1">&#39;NuSVM&#39;</span>
-
-        <span class="c1"># Naive Bayesian :</span>
-        <span class="k">elif</span> <span class="n">clf</span> <span class="o">==</span> <span class="s1">&#39;nb&#39;</span> <span class="ow">or</span> <span class="n">clf</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
-            <span class="n">clfObj</span> <span class="o">=</span> <span class="n">GaussianNB</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-            <span class="n">clfObj</span><span class="o">.</span><span class="n">lgStr</span> <span class="o">=</span> <span class="s1">&#39;Naive Baysian&#39;</span>
-            <span class="n">clfObj</span><span class="o">.</span><span class="n">shStr</span> <span class="o">=</span> <span class="s1">&#39;NB&#39;</span>
-
-        <span class="c1"># KNN :</span>
-        <span class="k">elif</span> <span class="n">clf</span> <span class="o">==</span> <span class="s1">&#39;knn&#39;</span> <span class="ow">or</span> <span class="n">clf</span> <span class="o">==</span> <span class="mi">5</span><span class="p">:</span>
-            <span class="n">clfObj</span> <span class="o">=</span> <span class="n">KNeighborsClassifier</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="n">n_knn</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-            <span class="n">clfObj</span><span class="o">.</span><span class="n">lgStr</span> <span class="o">=</span> <span class="s1">&#39;k-Nearest Neighbor (neighbor=&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">n_knn</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;)&#39;</span>
-            <span class="n">clfObj</span><span class="o">.</span><span class="n">shStr</span> <span class="o">=</span> <span class="s1">&#39;KNN-&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">n_knn</span><span class="p">)</span>
-
-        <span class="c1"># Random forest :</span>
-        <span class="k">elif</span> <span class="n">clf</span> <span class="o">==</span> <span class="s1">&#39;rf&#39;</span> <span class="ow">or</span> <span class="n">clf</span> <span class="o">==</span> <span class="mi">6</span><span class="p">:</span>
-            <span class="n">clfObj</span> <span class="o">=</span> <span class="n">RandomForestClassifier</span><span class="p">(</span><span class="n">n_estimators</span><span class="o">=</span><span class="n">n_tree</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-            <span class="n">clfObj</span><span class="o">.</span><span class="n">lgStr</span> <span class="o">=</span> <span class="s1">&#39;Random Forest (tree=&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">n_tree</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;)&#39;</span>
-            <span class="n">clfObj</span><span class="o">.</span><span class="n">shStr</span> <span class="o">=</span> <span class="s1">&#39;RF-&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">n_tree</span><span class="p">)</span>
-
-        <span class="c1"># Logistic regression :</span>
-        <span class="k">elif</span> <span class="n">clf</span> <span class="o">==</span> <span class="s1">&#39;lr&#39;</span> <span class="ow">or</span> <span class="n">clf</span> <span class="o">==</span> <span class="mi">7</span><span class="p">:</span>
-            <span class="n">clfObj</span> <span class="o">=</span> <span class="n">LogisticRegression</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-            <span class="n">clfObj</span><span class="o">.</span><span class="n">lgStr</span> <span class="o">=</span> <span class="s1">&#39;Logistic Regression&#39;</span>
-            <span class="n">clfObj</span><span class="o">.</span><span class="n">shStr</span> <span class="o">=</span> <span class="s1">&#39;LogReg&#39;</span>
-
-        <span class="c1"># QDA :</span>
-        <span class="k">elif</span> <span class="n">clf</span> <span class="o">==</span> <span class="s1">&#39;qda&#39;</span> <span class="ow">or</span> <span class="n">clf</span> <span class="o">==</span> <span class="mi">8</span><span class="p">:</span>
-            <span class="n">clfObj</span> <span class="o">=</span> <span class="n">QuadraticDiscriminantAnalysis</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-            <span class="n">clfObj</span><span class="o">.</span><span class="n">lgStr</span> <span class="o">=</span> <span class="s1">&#39;Quadratic Discriminant Analysis&#39;</span>
-            <span class="n">clfObj</span><span class="o">.</span><span class="n">shStr</span> <span class="o">=</span> <span class="s1">&#39;QDA&#39;</span>
-
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;No classifier &quot;&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">clf</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;&quot;&quot; found&#39;</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">clfObj</span></div>
-
-
-<div class="viewcode-block" id="defCv"><a class="viewcode-back" href="../../../classification.html#classification.defCv">[docs]</a><span class="k">class</span> <span class="nc">defCv</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-
-    <span class="sd">&quot;&quot;&quot;Choose a cross_validation (CV) and switch easyly between</span>
-<span class="sd">    CV implemented in scikit-learn.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        y: array</span>
-<span class="sd">            The vector label</span>
-
-<span class="sd">    kargs:</span>
-<span class="sd">        cvtype: string, optional, [def: skfold]</span>
-<span class="sd">            Define a cross_validation. Choose between :</span>
-
-<span class="sd">                - &#39;skfold&#39;: Stratified k-Fold</span>
-<span class="sd">                - &#39;kfold&#39;: k-fold</span>
-<span class="sd">                - &#39;sss&#39;: Stratified Shuffle Split</span>
-<span class="sd">                - &#39;ss&#39;: Shuffle Split</span>
-<span class="sd">                - &#39;loo&#39;: Leave One Out</span>
-<span class="sd">                - &#39;lolo&#39;: Leave One Label Out</span>
-
-<span class="sd">        n_folds: integer, optional, [def: 10]</span>
-<span class="sd">            Number of folds</span>
-
-<span class="sd">        rndstate: integer, optional, [def: 0]</span>
-<span class="sd">            Define a random state. Usefull to replicate a result</span>
-
-<span class="sd">        rep: integer, optional, [def: 10]</span>
-<span class="sd">            Number of repetitions</span>
-
-<span class="sd">        kwargs: optional arguments. To define other parameters,</span>
-<span class="sd">        see the description of scikit-learn.</span>
-
-<span class="sd">    Return:</span>
-<span class="sd">        A list of scikit-learn cross-validation objects with two supplementar</span>
-<span class="sd">        arguments:</span>
-
-<span class="sd">            - lgStr: long description of the cross_validation</span>
-<span class="sd">            - shStr: short description of the cross_validation</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">cvtype</span><span class="o">=</span><span class="s1">&#39;skfold&#39;</span><span class="p">,</span> <span class="n">n_folds</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">rndstate</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">rep</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
-                 <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">pass</span>
-
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">lgStr</span>
-
-    <span class="k">def</span> <span class="nf">__new__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">cvtype</span><span class="o">=</span><span class="s1">&#39;skfold&#39;</span><span class="p">,</span> <span class="n">n_folds</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">rndstate</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">rep</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
-                <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">_define</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">cvtype</span><span class="o">=</span><span class="n">cvtype</span><span class="p">,</span> <span class="n">n_folds</span><span class="o">=</span><span class="n">n_folds</span><span class="p">,</span> <span class="n">rndstate</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">rep</span><span class="o">=</span><span class="n">rep</span><span class="p">,</span>
-                        <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">rep</span><span class="p">)]</span></div>
-
-
-<span class="k">def</span> <span class="nf">_define</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">cvtype</span><span class="o">=</span><span class="s1">&#39;skfold&#39;</span><span class="p">,</span> <span class="n">n_folds</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">rndstate</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">rep</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="c1"># Stratified k-fold :</span>
-    <span class="k">if</span> <span class="n">cvtype</span> <span class="o">==</span> <span class="s1">&#39;skfold&#39;</span><span class="p">:</span>
-        <span class="n">cvT</span> <span class="o">=</span> <span class="n">StratifiedKFold</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">n_folds</span><span class="o">=</span><span class="n">n_folds</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
-                              <span class="n">random_state</span><span class="o">=</span><span class="n">rndstate</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="n">cvT</span><span class="o">.</span><span class="n">lgStr</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">rep</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;-times, &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">n_folds</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; Stratified k-folds&#39;</span>
-        <span class="n">cvT</span><span class="o">.</span><span class="n">shStr</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">rep</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; rep x&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">n_folds</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; &#39;</span><span class="o">+</span><span class="n">cvtype</span>
-
-    <span class="c1"># k-fold :</span>
-    <span class="k">elif</span> <span class="n">cvtype</span> <span class="o">==</span> <span class="s1">&#39;kfold&#39;</span><span class="p">:</span>
-        <span class="n">cvT</span> <span class="o">=</span> <span class="n">KFold</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="n">n_folds</span><span class="o">=</span><span class="n">n_folds</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
-                    <span class="n">random_state</span><span class="o">=</span><span class="n">rndstate</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="n">cvT</span><span class="o">.</span><span class="n">lgStr</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">rep</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;-times, &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">n_folds</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; k-folds&#39;</span>
-        <span class="n">cvT</span><span class="o">.</span><span class="n">shStr</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">rep</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; rep x&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">n_folds</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; &#39;</span><span class="o">+</span><span class="n">cvtype</span>
-
-    <span class="c1"># Shuffle stratified k-fold :</span>
-    <span class="k">elif</span> <span class="n">cvtype</span> <span class="o">==</span> <span class="s1">&#39;sss&#39;</span><span class="p">:</span>
-        <span class="n">cvT</span> <span class="o">=</span> <span class="n">StratifiedShuffleSplit</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">n_iter</span><span class="o">=</span><span class="n">n_folds</span><span class="p">,</span>
-                                     <span class="n">test_size</span><span class="o">=</span><span class="mi">1</span><span class="o">/</span><span class="n">n_folds</span><span class="p">,</span>
-                                     <span class="n">random_state</span><span class="o">=</span><span class="n">rndstate</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="n">cvT</span><span class="o">.</span><span class="n">lgStr</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">rep</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;-times, test size 1/&#39;</span> <span class="o">+</span> \
-            <span class="nb">str</span><span class="p">(</span><span class="n">n_folds</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; Shuffle Stratified Split&#39;</span>
-        <span class="n">cvT</span><span class="o">.</span><span class="n">shStr</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">rep</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; rep x&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">n_folds</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; &#39;</span><span class="o">+</span><span class="n">cvtype</span>
-
-    <span class="c1"># Shuffle stratified :</span>
-    <span class="k">elif</span> <span class="n">cvtype</span> <span class="o">==</span> <span class="s1">&#39;ss&#39;</span><span class="p">:</span>
-        <span class="n">cvT</span> <span class="o">=</span> <span class="n">ShuffleSplit</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="n">n_iter</span><span class="o">=</span><span class="n">rep</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mi">1</span><span class="o">/</span><span class="n">n_folds</span><span class="p">,</span>
-                           <span class="n">random_state</span><span class="o">=</span><span class="n">rndstate</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="n">cvT</span><span class="o">.</span><span class="n">lgStr</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">rep</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;-times, test size 1/&#39;</span> <span class="o">+</span> \
-            <span class="nb">str</span><span class="p">(</span><span class="n">n_folds</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; Shuffle Stratified&#39;</span>
-        <span class="n">cvT</span><span class="o">.</span><span class="n">shStr</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">rep</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; rep x&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">n_folds</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; &#39;</span><span class="o">+</span><span class="n">cvtype</span>
-
-    <span class="c1"># Leave One Out :</span>
-    <span class="k">elif</span> <span class="n">cvtype</span> <span class="o">==</span> <span class="s1">&#39;loo&#39;</span><span class="p">:</span>
-        <span class="n">cvT</span> <span class="o">=</span> <span class="n">LeaveOneOut</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
-        <span class="n">cvT</span><span class="o">.</span><span class="n">lgStr</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">rep</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;-times, Leave One Out&#39;</span>
-        <span class="n">cvT</span><span class="o">.</span><span class="n">shStr</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">rep</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; rep &#39;</span><span class="o">+</span><span class="n">cvtype</span>
-
-    <span class="c1"># Leave One Label Out :</span>
-    <span class="k">elif</span> <span class="n">cvtype</span> <span class="o">==</span> <span class="s1">&#39;lolo&#39;</span><span class="p">:</span>
-        <span class="n">cvT</span> <span class="o">=</span> <span class="n">LeaveOneLabelOut</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
-        <span class="n">cvT</span><span class="o">.</span><span class="n">lgStr</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">rep</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;-times, leave One Label Out&#39;</span>
-        <span class="n">cvT</span><span class="o">.</span><span class="n">shStr</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">rep</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; rep &#39;</span><span class="o">+</span><span class="n">cvtype</span>
-
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;No cross-validation &quot;&#39;</span><span class="o">+</span><span class="n">cvtype</span><span class="o">+</span><span class="s1">&#39;&quot;&quot; found&#39;</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">cvT</span>
-
-
-<span class="k">def</span> <span class="nf">checkXY</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">mf</span><span class="p">,</span> <span class="n">grp</span><span class="p">,</span> <span class="n">center</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Prepare the inputs x and y</span>
-<span class="sd">    x.shape = (ntrials, nfeat)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">T</span>
-
-    <span class="c1"># Normalize features :</span>
-    <span class="k">if</span> <span class="n">center</span><span class="p">:</span>
-        <span class="n">x_m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">))</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="o">-</span><span class="n">x_m</span><span class="p">)</span><span class="o">/</span><span class="n">x_m</span>
-
-    <span class="c1"># Group parameter :</span>
-    <span class="k">if</span> <span class="n">mf</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">grp</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-            <span class="n">grp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">grp</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">grp</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="p">(</span><span class="n">grp</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">grp</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
-            <span class="n">ugrp</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">grp</span><span class="p">))</span>
-            <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">grp</span> <span class="o">==</span> <span class="n">k</span><span class="p">)[</span><span class="mi">0</span><span class="p">]])</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">ugrp</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="p">(</span><span class="n">grp</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">grp</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The grp parameter must have the same size as the&#39;</span>
-                             <span class="s1">&#39; number of features (&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">+</span><span class="s1">&#39;)&#39;</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">[:,</span> <span class="n">k</span><span class="p">])</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])]</span>
-
-    <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span>
 
 
 <div class="viewcode-block" id="generalization"><a class="viewcode-back" href="../../../classification.html#classification.generalization">[docs]</a><span class="k">class</span> <span class="nc">generalization</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>

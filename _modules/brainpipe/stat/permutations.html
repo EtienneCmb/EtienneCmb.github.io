@@ -106,6 +106,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../classification.html#define-a-classifier">Define a classifier</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../classification.html#define-a-cross-validation">Define a cross-validation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../classification.html#classify">Classify</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../classification.html#leave-p-subjects-out">Leave p-subjects out</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../classification.html#generalization">Generalization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../classification.html#multi-features">Multi-features</a></li>
 </ul>
@@ -201,13 +202,17 @@
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">product</span>
 <span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">FunctionType</span>
+<span class="kn">from</span> <span class="nn">brainpipe.tools</span> <span class="kn">import</span> <span class="n">uorderlst</span>
+<span class="kn">from</span> <span class="nn">brainpipe.stat.multcomp</span> <span class="kn">import</span> <span class="o">*</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;perm_rndDatasets&quot;</span><span class="p">,</span>
            <span class="s2">&quot;perm_swap&quot;</span><span class="p">,</span>
            <span class="s2">&quot;perm_array&quot;</span><span class="p">,</span>
            <span class="s2">&quot;perm_rep&quot;</span><span class="p">,</span>
            <span class="s2">&quot;perm_metric&quot;</span><span class="p">,</span>
-           <span class="s2">&quot;perm_2pvalue&quot;</span>
+           <span class="s2">&quot;perm_2pvalue&quot;</span><span class="p">,</span>
+           <span class="s2">&quot;permIntraClass&quot;</span><span class="p">,</span>
+           <span class="s2">&quot;perm_pvalue2level&quot;</span>
            <span class="p">]</span>
 
 
@@ -511,6 +516,45 @@
     <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
     <span class="n">shuffled</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])[:,</span> <span class="bp">None</span><span class="p">],</span> <span class="n">idx</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">shuffled</span><span class="p">,</span> <span class="n">idx</span>
+
+
+<span class="k">def</span> <span class="nf">permIntraClass</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">rnd</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Generate intr-class permutations</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">yt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
+    <span class="n">rnd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="n">rnd</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">([</span><span class="n">rnd</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="n">yt</span><span class="p">[</span><span class="n">y</span> <span class="o">==</span> <span class="n">k</span><span class="p">])</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">uorderlst</span><span class="p">(</span><span class="n">y</span><span class="p">)])</span>
+
+
+<div class="viewcode-block" id="perm_pvalue2level"><a class="viewcode-back" href="../../../stat.html#statistics.perm_pvalue2level">[docs]</a><span class="k">def</span> <span class="nf">perm_pvalue2level</span><span class="p">(</span><span class="n">perm</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">maxst</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get level from which you can consider</span>
+<span class="sd">    that it&#39;s p-significant;</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        perm:</span>
+<span class="sd">            Array of permutations of shape</span>
+<span class="sd">            (n_perm, d1, d2, ..., dn)</span>
+
+<span class="sd">    Kargs:</span>
+<span class="sd">        p: float, optional, [def: 0.05]</span>
+<span class="sd">            p-value to search in permutation distribution</span>
+
+<span class="sd">        maxst: bool, optional, [def: False]</span>
+<span class="sd">            Correct permutations with maximum statistics</span>
+
+<span class="sd">    Return:</span>
+<span class="sd">        level: float</span>
+<span class="sd">            The level from which you can consider</span>
+<span class="sd">            your results as p-significants using permutations</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n_perm</span> <span class="o">=</span> <span class="n">perm</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">n2take</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">n_perm</span><span class="o">*</span><span class="n">p</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">n2take</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">n2take</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">maxst</span><span class="p">:</span>
+        <span class="n">perm</span> <span class="o">=</span> <span class="n">maxstat</span><span class="p">(</span><span class="n">perm</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">perm</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">perm</span><span class="p">[</span><span class="o">-</span><span class="n">n2take</span><span class="p">,</span> <span class="p">:]</span></div>
 </pre></div>
 
           </div>

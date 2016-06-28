@@ -106,6 +106,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../classification.html#define-a-classifier">Define a classifier</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../classification.html#define-a-cross-validation">Define a cross-validation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../classification.html#classify">Classify</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../classification.html#leave-p-subjects-out">Leave p-subjects out</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../classification.html#generalization">Generalization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../classification.html#multi-features">Multi-features</a></li>
 </ul>
@@ -407,9 +408,10 @@
 <div class="viewcode-block" id="tilerplot.plot2D"><a class="viewcode-back" href="../../../visualization.html#visual.tilerplot.plot2D">[docs]</a>    <span class="k">def</span> <span class="nf">plot2D</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fig</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">xvec</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">yvec</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;inferno&#39;</span><span class="p">,</span>
                <span class="n">colorbar</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">cbticks</span><span class="o">=</span><span class="s1">&#39;minmax&#39;</span><span class="p">,</span> <span class="n">ycb</span><span class="o">=-</span><span class="mi">10</span><span class="p">,</span> <span class="n">cblabel</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
                <span class="n">under</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">over</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
-               <span class="n">sharey</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">subdim</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">,</span>
-               <span class="n">resample</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">figtitle</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">transpose</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">maxplot</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
-               <span class="n">subspace</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">contour</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">pltargs</span><span class="o">=</span><span class="p">{},</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+               <span class="n">sharey</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">textin</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">textcolor</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">textype</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%.4f</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">subdim</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+               <span class="n">mask</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">,</span> <span class="n">resample</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">figtitle</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+               <span class="n">transpose</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">maxplot</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">subspace</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">contour</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">pltargs</span><span class="o">=</span><span class="p">{},</span>
+               <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Plot y as an image</span>
 
 <span class="sd">        Args:</span>
@@ -451,6 +453,15 @@
 
 <span class="sd">            sharex, sharey: bool, optional, [def: False]</span>
 <span class="sd">                Define if subplots should share x and y</span>
+
+<span class="sd">            textin: bool, optional, [def: False]</span>
+<span class="sd">                Display values inside the heatmap</span>
+
+<span class="sd">            textcolor: string, optional, [def: &#39;w&#39;]</span>
+<span class="sd">                Color of values inside the heatmap</span>
+
+<span class="sd">            textype: string, optional, [def: &#39;%.4f&#39;]</span>
+<span class="sd">                Way of display text inside the heatmap</span>
 
 <span class="sd">            subdim: tuple, optional, [def: None]</span>
 <span class="sd">                Force subplots to be subdim=(n_colums, n_rows)</span>
@@ -513,9 +524,9 @@
         <span class="c1"># Check y shape :</span>
         <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_checkarray</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">xvec</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="n">xvec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">xvec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">yvec</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="n">yvec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">yvec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">l0</span><span class="p">,</span> <span class="n">l1</span><span class="p">,</span> <span class="n">l2</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span>
 
         <span class="k">if</span> <span class="p">(</span><span class="n">vmin</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">vmax</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">):</span>
@@ -604,6 +615,15 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">cb</span><span class="o">.</span><span class="n">set_ticks</span><span class="p">(</span><span class="n">cbticks</span><span class="p">)</span>
                 <span class="n">cb</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="n">cblabel</span><span class="p">,</span> <span class="n">labelpad</span><span class="o">=</span><span class="n">ycb</span><span class="p">)</span>
+
+            <span class="c1"># Text inside:</span>
+            <span class="k">if</span> <span class="n">textin</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+                        <span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">k</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">textype</span> <span class="o">%</span> <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">k</span><span class="p">],</span>
+                                 <span class="n">color</span><span class="o">=</span><span class="n">textcolor</span><span class="p">,</span>
+                                 <span class="n">horizontalalignment</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span>
+                                 <span class="n">verticalalignment</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">)</span>
 
         <span class="n">axAll</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subplotND</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">_fcn</span><span class="p">,</span> <span class="n">maxplot</span><span class="p">,</span> <span class="n">subdim</span><span class="p">,</span> <span class="n">sharex</span><span class="p">,</span> <span class="n">sharey</span><span class="p">)</span>
         <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span>

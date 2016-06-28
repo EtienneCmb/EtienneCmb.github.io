@@ -107,6 +107,7 @@
 <li class="toctree-l1"><a class="reference internal" href="classification.html#define-a-classifier">Define a classifier</a></li>
 <li class="toctree-l1"><a class="reference internal" href="classification.html#define-a-cross-validation">Define a cross-validation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="classification.html#classify">Classify</a></li>
+<li class="toctree-l1"><a class="reference internal" href="classification.html#leave-p-subjects-out">Leave p-subjects out</a></li>
 <li class="toctree-l1"><a class="reference internal" href="classification.html#generalization">Generalization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="classification.html#multi-features">Multi-features</a></li>
 </ul>
@@ -333,6 +334,37 @@ or two tails of the permutation distribution</dd>
 <li>function: user defined function [def myfcn(A, B): return array_like]</li>
 </ul>
 </div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="statistics.perm_pvalue2level">
+<code class="descclassname">statistics.</code><code class="descname">perm_pvalue2level</code><span class="sig-paren">(</span><em>perm</em>, <em>p=0.05</em>, <em>maxst=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brainpipe/stat/permutations.html#perm_pvalue2level"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#statistics.perm_pvalue2level" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get level from which you can consider
+that it&#8217;s p-significant;</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>perm:</dt>
+<dd>Array of permutations of shape
+(n_perm, d1, d2, ..., dn)</dd>
+</dl>
+</dd>
+<dt>Kargs:</dt>
+<dd><dl class="first last docutils">
+<dt>p: float, optional, [def: 0.05]</dt>
+<dd>p-value to search in permutation distribution</dd>
+<dt>maxst: bool, optional, [def: False]</dt>
+<dd>Correct permutations with maximum statistics</dd>
+</dl>
+</dd>
+<dt>Return:</dt>
+<dd><dl class="first last docutils">
+<dt>level: float</dt>
+<dd>The level from which you can consider
+your results as p-significants using permutations</dd>
+</dl>
 </dd>
 </dl>
 </dd></dl>
