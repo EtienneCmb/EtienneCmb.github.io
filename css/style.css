@@ -11,7 +11,7 @@ body, html{
 }
 @media (min-width: 1200px){
 	.container {
-		width: 960px;
+		width: 1100px;
 	}
 }
 h1{
@@ -46,6 +46,7 @@ h6{
 	font-size: 10px;
 	word-spacing: 2px;
 	letter-spacing: 2px;
+	color: #f8f8f8;
 }
 li{
 	font-weight: 400;
@@ -94,12 +95,12 @@ a:focus{
 }
 #home a.down-btn span.fa.fa-angle-down {
 	font-size: 26px;
-	border: 0;
-	border-radius: 2px;
-	padding: 7px 5px;
+	border: 1px solid #dc9656;
+	border-radius: 400px;
+	padding: 5px 9px;
 	position: relative;
-	margin-top: 100px;
-	color: #7cafc2;
+	margin-top: 300px;
+	color: #dc9656;
 	cursor: pointer;
 }
 .content{
@@ -135,17 +136,17 @@ a:focus{
 }
 @keyframes blink{
     0% { opacity:1; }
-    50% { opacity:0.3; }
+    50% { opacity:0.1; }
     100% { opacity:1; }
 }
 @-webkit-keyframes blink{
     0% { opacity:1; }
-    50% { opacity:0.3; }
+    50% { opacity:0.1; }
     100% { opacity:1; }
 }
 @-moz-keyframes blink{
     0% { opacity:1; }
-    50% { opacity:0.3; }
+    50% { opacity:0.1; }
     100% { opacity:1; }
 }
 span.typed-cursor {
@@ -168,7 +169,7 @@ nav#menu span.fa.fa-bars{
 	font-size: 30px;
 	position: fixed;
 	left: 120px;
-	color: #c0c0c0;
+	color: #f8f8f8;
 	cursor: pointer;
 	z-index: 1;
 }
@@ -179,7 +180,7 @@ z-index: 10;
 }
 .navmenu-default, 
 .navbar-default .navbar-offcanvas {
-	background-color: rgba(23, 23, 23, .8);
+	background-color: rgba(23, 23, 23, 0.97);
 	/*background-color: transparent;*/
 	/*border-color: rgba(50, 50, 50, .95);*/
 	border: 0;
@@ -212,8 +213,8 @@ color: #AB4642;
 .navbar-default .navbar-offcanvas .navmenu-nav>.active>a:hover, 
 .navmenu-default .navmenu-nav>.active>a:focus, 
 .navbar-default .navbar-offcanvas .navmenu-nav>.active>a:focus {
-color: #34495e;
-background-color: transparent;
+color: #dc9656;
+	background-color: transparent;
 }
 
 .close:hover{
@@ -222,16 +223,19 @@ background-color: transparent;
 	opacity: 1;
 }
 .close{
-	background: #f8f8f8;
+	/*background: rgba(248, 248, 248, 0.5);*/
 	padding: 10px 12px;
 	opacity: 1;
 	transition: all 0.3s;
+	background-color: transparent;
+	color: #f8f8f8;
 }
 .add-margin{
 	margin-top: 200px;
 }
 
 #presentation,
+#skills
 #publications,
 #works,
 #about-us{
@@ -240,14 +244,15 @@ background-color: transparent;
 
 a.down-btn span.fa.fa-angle-down {
 	font-size: 26px;
-	border: 0;
-	border-radius: 2px;
-	padding: 7px 5px;
+	border: 1px solid #dc9656;
+	border-radius: 400px;
+	padding: 5px 9px;
 	position: relative;
 	cursor: pointer;
-	color: #7cafc2;
+	color: #dc9656;
 	margin-top: 30px;
 	-webkit-animation: blink 3s linear infinite;
+	background: rgba(40, 40, 40, 0.9);
 }
 
 #overview-video {
@@ -296,7 +301,8 @@ a.down-btn span.fa.fa-angle-down {
 	cursor: pointer;
 	padding-top: 80px;
 	padding-bottom: 80px;
-	background: #282828;
+	background: rgba(34, 34, 34, 0.5);
+	/*background: #282828;*/
 }
 .service p{
 	font-size: 14px;
@@ -419,7 +425,7 @@ a.btn.send-btn:hover{
 	background: #34495e;
 }
 
-#clients {
+#skills {
 	background: url(../img/bg3.jpg);
 	background-size: cover;
 	background-position: center;
@@ -428,7 +434,7 @@ a.btn.send-btn:hover{
 	text-align: center;
 }
 
-#clients .overlay{
+#skills .overlay{
 	background: rgba(34, 34, 34, 0.85);
 	height: auto;
 	min-height: 200px;
@@ -442,7 +448,7 @@ ul, ol{
 	webkit-padding: 0;
 }
 
-ul.clients li{
+ul.skills li{
 	display: inline-block;
 	padding: 20px 40px;
 	vertical-align: middle;
@@ -481,7 +487,7 @@ ul.clients li{
 	margin: 0 auto;
 }
 
-#cursus {
+#skills {
 	background: url(../img/bg4.jpg);
 	background-size: cover;
 	background-position: center;
@@ -490,7 +496,7 @@ ul.clients li{
 	text-align: center;
 }
 
-#cursus .overlay{
+#skills .overlay{
 	background: rgba(34, 34, 34, 0.85);
 	height: auto;
 	min-height: 200px;
@@ -587,28 +593,28 @@ margin-bottom: 30px;
 	box-shadow: none;
 }
 input::-webkit-input-placeholder, textarea::-webkit-input-placeholder { 
-    color:    #222222;
+    color:    #282828;
     font-family: 'Lato', sans-serif;
     font-size: 13px;
     letter-spacing: 1px;
     font-style: italic;
 }
 input:-moz-placeholder, textarea:-moz-placeholder { 
-    color:    #222222;
+    color:    #282828;
     font-family: 'Lato', sans-serif;
     font-size: 13px;
     letter-spacing: 1px;
     font-style: italic;
 }
 input::-moz-placeholder, textarea::-moz-placeholder { 
-    color:    #222222;
+    color:    #282828;
     font-family: 'Lato', sans-serif;
     font-size: 13px;
     letter-spacing: 1px;
     font-style: italic;
 }
 input:-ms-input-placeholder, textarea:-ms-input-placeholder { 
-    color:    #222222;
+    color:    #282828;
     font-family: 'Lato', sans-serif;
     font-size: 13px;
     letter-spacing: 1px;
