@@ -52,6 +52,14 @@ li{
 	text-align: left;
 	color: #f8f8f8;
 	list-style: circle;
+	word-spacing: 4px;
+}
+ol{
+	font-weight: 400;
+	text-align: center;
+	color: #f8f8f8;
+	list-style: circle;
+	word-spacing: 4px;
 }
 
 p{
@@ -62,7 +70,10 @@ hr{
 	width: 50px;
 	border-color: #ab4642;
 }
-a {color: #f8f8f8}
+a {
+	color: #f8f8f8;
+	/*-webkit-animation: blink 3s linear infinite;*/
+}
 a:hover,
 a:focus{
 	color: #ab4642;
@@ -88,14 +99,14 @@ a:focus{
 	padding: 7px 5px;
 	position: relative;
 	margin-top: 100px;
-	color: #ab4642;
+	color: #7cafc2;
 	cursor: pointer;
 }
 .content{
 	padding-top: 16%;
 }
 .header-text.btn{
-	border: 1px solid #ffffff;
+	border: 1px solid #f8f8f8;
 	border-radius: 0;
 	padding: 10px 30px;
 	height: 100px;
@@ -124,17 +135,17 @@ a:focus{
 }
 @keyframes blink{
     0% { opacity:1; }
-    50% { opacity:0; }
+    50% { opacity:0.3; }
     100% { opacity:1; }
 }
 @-webkit-keyframes blink{
     0% { opacity:1; }
-    50% { opacity:0; }
+    50% { opacity:0.3; }
     100% { opacity:1; }
 }
 @-moz-keyframes blink{
     0% { opacity:1; }
-    50% { opacity:0; }
+    50% { opacity:0.3; }
     100% { opacity:1; }
 }
 span.typed-cursor {
@@ -144,7 +155,7 @@ span.typed-cursor {
 /*.header-text{
 	margin-top: 20px;	
 	position: absolute;
-	border: 1px solid #ffffff;
+	border: 1px solid #f8f8f8;
 	left: 25%;
 	right: 25%;
 }
@@ -201,7 +212,7 @@ color: #AB4642;
 .navbar-default .navbar-offcanvas .navmenu-nav>.active>a:hover, 
 .navmenu-default .navmenu-nav>.active>a:focus, 
 .navbar-default .navbar-offcanvas .navmenu-nav>.active>a:focus {
-color: #a1b56c;
+color: #34495e;
 background-color: transparent;
 }
 
@@ -234,7 +245,7 @@ a.down-btn span.fa.fa-angle-down {
 	padding: 7px 5px;
 	position: relative;
 	cursor: pointer;
-	color: #ab4642;
+	color: #7cafc2;
 	margin-top: 30px;
 	-webkit-animation: blink 3s linear infinite;
 }
@@ -268,19 +279,24 @@ a.down-btn span.fa.fa-angle-down {
 	margin-bottom: 0px;
 	transition: all 0.3s;
 	position: relative;
-	padding: 60px 25px;
+	padding: 20px 25px;
 }
 .service:hover>h4,
 .service:hover>span.fa{
-	color: #c59a6d;
+	color: #ab4642;
+}
+.service:hover>h5,
+.service:hover>span.fa{
+	color: #5f9182;
 }
 .service:hover{
-	border-color: #c59a6d;
+	border-color: #ab4642;
 	margin-top: 0px;
 	margin-bottom: 0px;
 	cursor: pointer;
 	padding-top: 80px;
 	padding-bottom: 80px;
+	background: #282828;
 }
 .service p{
 	font-size: 14px;
@@ -290,7 +306,7 @@ a.down-btn span.fa.fa-angle-down {
 .space{ padding-top: 40px; }
 
 #cta{
-	background: #585858;
+	background: #282828;
 	padding: 4% 0;
 }
 
@@ -301,7 +317,7 @@ a.btn.go-to-btn{
 	padding: 7px 30px;
 	border-radius: 2px;
 	font-size: 12px;
-	color: #ffffff;
+	color: #f8f8f8;
 	transition: all 0.5s;
 }
 a.btn.go-to-btn:hover{
@@ -324,8 +340,8 @@ a.btn.go-to-btn:hover{
 	position: absolute;
 	text-align: center;
 	margin: 0 auto;
-	color: #ffffff;
-	background: rgba(0, 0, 0, 0.66);
+	color: #f8f8f8;
+	background: rgba(0, 0, 0, 0.7);
 	padding: 10% 0;
 	height: 100%;
 	width: 100%;
@@ -366,8 +382,8 @@ a.btn.go-to-btn:hover{
 	margin: 0 auto
 }
 
-.hover-text p.lead{
-	color: #5f9182;;
+.hover-text, p.lead{
+	color: #5f9182;
 }
 
 
@@ -379,28 +395,28 @@ a.btn.read-more-btn{
 	padding: 7px 30px;
 	border-radius: 2px;
 	font-size: 12px;
-	color: #ffffff;
+	color: #f8f8f8;
 	transition: all 0.5s;
 }
 a.btn.read-more-btn:hover{
 	background: #222222;
-	color: #ffffff;
+	color: #f8f8f8;
 }
 
 a.btn.send-btn{
+	/*background: transparent;*/
 	text-transform: uppercase;
-	background: #c59a6d;
+	background: rgba(52, 73, 94, .3);
 	color: #282f35;
 	padding: 15px 35px;
 	border-radius: 0;
 	font-size: 12px;
-	color: #ffffff;
+	color: #f8f8f8;
 	transition: all 0.5s;
 }
 a.btn.send-btn:hover{
-	background: transparent;
-	border: 1px solid #c59a6d;
-	color: #ffffff;
+	border: 1px solid #34495e;
+	background: #34495e;
 }
 
 #clients {
@@ -417,7 +433,7 @@ a.btn.send-btn:hover{
 	height: auto;
 	min-height: 200px;
 	padding: 8% 0 ;
-	color: #ffffff;
+	color: #f8f8f8;
 }
 
 ul, ol{
@@ -479,7 +495,7 @@ ul.clients li{
 	height: auto;
 	min-height: 200px;
 	padding: 5% 0 ;
-	color: #ffffff;
+	color: #f8f8f8;
 }
 
 .owl-theme .owl-controls .owl-page span {
@@ -496,20 +512,20 @@ ul.clients li{
 }
 
 #contact{
-	background: #282f35;
+	background: #282828;
 	padding: 100px 0;
-	color: #ffffff;
+	color: #f8f8f8;
 }
 
 ul.social li{
 	display: inline-block;
 	margin-right: 20px;
 	margin-top: 30px;
-	color: #ffffff;
+	color: #f8f8f8;
 }
 
 ul.social li a{
-	color: #ffffff;
+	color: #f8f8f8;
 	font-size: 16px;
 }
 
@@ -550,8 +566,8 @@ margin-bottom: 30px;
 	padding: 7px 12px;
 	font-size: 14px;
 	line-height: 1.42857143;
-	color: #555;
-	background-color: #1e2429;
+	color: #e8e8e8;
+	background-color: #383838;
 	background-image: none;
 	border: 0;
 	border-top: 2px solid transparent;
@@ -565,7 +581,7 @@ margin-bottom: 30px;
 }
 
 #contact .form-control:focus {
-	border-color: #C59A6D;
+	border-color: #34495e;
 	outline: 0;
 	-webkit-box-shadow: none;
 	box-shadow: none;
@@ -600,9 +616,9 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
 }
 
 nav#footer{
-	background: #282f35;
+	background: #282828;
 	padding: 40px 0;
-	color: #ffffff;
+	color: #f8f8f8;
 	border-bottom: 5px solid #c59a6d;
 }
 #footer span.fa{
@@ -611,7 +627,7 @@ nav#footer{
 	margin-left: 10px;
 }
 #footer a{
-	color: #ffffff;
+	color: #f8f8f8;
 }
 #footer a:hover{
 	color: #c59a6d;}
