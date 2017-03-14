@@ -619,10 +619,10 @@ nav#footer{
 	background: #282828;
 	padding: 40px 0;
 	color: #f8f8f8;
-	border-bottom: 5px solid #c59a6d;
+	border-bottom: 5px solid #282828;
 }
 #footer span.fa{
-	color: #c59a6d;
+	color: #ab4642;
 	font-size: 26px;
 	margin-left: 10px;
 }
@@ -630,4 +630,4 @@ nav#footer{
 	color: #f8f8f8;
 }
 #footer a:hover{
-	color: #c59a6d;}
+	color: #ab4642;}
