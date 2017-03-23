@@ -11,7 +11,16 @@ body, html{
 }
 @media (min-width: 1200px){
 	.container {
-		width: 1100px;
+		width: 70%;
+		/*display: table-cell;*/
+		margin: auto;
+		/*min-height: 100vh;*/
+		/*vertical-align:middle;*/
+		/*horizontal-align:center;*/
+/*		display:inline-block;
+		margin-top: 50vh;
+		margin-left: 40vh;
+		transform: translateY(-50%);*/
 	}
 }
 h1{
@@ -284,7 +293,8 @@ a.down-btn span.fa.fa-angle-down {
 	margin-bottom: 0px;
 	transition: all 0.3s;
 	position: relative;
-	padding: 20px 25px;
+	padding: 10px 10px;
+	background: rgba(22, 22, 22, 0.9);
 }
 .service:hover>h4,
 .service:hover>span.fa{
@@ -301,7 +311,7 @@ a.down-btn span.fa.fa-angle-down {
 	cursor: pointer;
 	padding-top: 80px;
 	padding-bottom: 80px;
-	background: rgba(34, 34, 34, 0.5);
+	background: rgba(27, 27, 27, 0.9);
 	/*background: #282828;*/
 }
 .service p{
@@ -313,7 +323,7 @@ a.down-btn span.fa.fa-angle-down {
 
 #cta{
 	background: #282828;
-	padding: 4% 0;
+	padding: 6% 0;
 }
 
 a.btn.go-to-btn{
@@ -347,7 +357,7 @@ a.btn.go-to-btn:hover{
 	text-align: center;
 	margin: 0 auto;
 	color: #f8f8f8;
-	background: rgba(0, 0, 0, 0.7);
+	background: rgba(0, 0, 0, 0.9);
 	padding: 10% 0;
 	height: 100%;
 	width: 100%;
@@ -488,7 +498,7 @@ ul.skills li{
 }
 
 #skills {
-	background: url(../img/bg4.jpg);
+	background: url(../img/bg4.png);
 	background-size: cover;
 	background-position: center;
 	background-repeat: no-repeat;
@@ -497,7 +507,7 @@ ul.skills li{
 }
 
 #skills .overlay{
-	background: rgba(34, 34, 34, 0.85);
+	background: rgba(22, 22, 22, 0.7);
 	height: auto;
 	min-height: 200px;
 	padding: 5% 0 ;
